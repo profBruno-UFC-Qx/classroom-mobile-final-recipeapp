@@ -3,28 +3,36 @@
 # Proposta de aplicativo
 
 ## Equipe
-* **Nome do Aluno(a) 1:** [Seu nome e matrícula]
-* **Nome do Aluno(a) 2:** [Seu nome e matrícula]
-* **Nome do Aluno(a) 3:** [Seu nome e matrícula]
-* ...
+* **Nome do Aluno(a) 1:** Antônio Kauã Silva Barros
+
 
 ---
 
 ## Título do Projeto
-[Escolha um título criativo e descritivo para o seu projeto.]
+RecipeApp - Aplicativo de receitas
 
 ## Descrição do Projeto
-[Descreva em 2-3 parágrafos o que o seu projeto faz. Qual é o problema que ele resolve? Quem é o público-alvo? Quais são as principais funcionalidades?]
+Este projeto é um aplicativo mobile de receitas que facilita a organização e o acesso a diferentes pratos culinários. A proposta é oferecer uma experiência simples e eficiente para pessoas que gostam de cozinhar ou que buscam ideias rápidas para suas refeições. Com ele, o usuário pode se cadastrar, fazer login, criar sua própria receita e visualizar receitas trazidas de uma API externa, garantindo uma base inicial de conteúdo logo ao acessar o app.
+
+Além disso, o aplicativo permite que cada usuário gerencie seu próprio espaço culinário: é possível salvar receitas favoritas, listar apenas aquelas que o próprio usuário criou e até personalizar o perfil com uma foto. Para tornar a busca mais prática, o app oferece recursos de pesquisa por nome e filtros por categoria (doce, salgada ou agridoce), ajudando o usuário a encontrar rapidamente o que deseja. Dessa forma, o projeto resolve o problema da falta de organização e da dificuldade de encontrar receitas de forma ágil e personalizada.
+
+O público-alvo inclui desde pessoas que cozinham ocasionalmente até entusiastas que gostam de registrar e compartilhar suas criações culinárias. Com funcionalidades intuitivas e foco na personalização, o app se torna uma ferramenta prática para quem deseja armazenar, consultar e descobrir novas receitas no dia a dia.
 
 ---
 
 ## Funcionalidades Principais
 [Liste as principais funcionalidades do projeto. Use caixas de seleção para que a equipe possa marcar as concluídas nas próximas etapas.]
 
-- [ ] Funcionalidade 1: [Breve descrição da funcionalidade]
-- [ ] Funcionalidade 2: [Breve descrição da funcionalidade]
-- [ ] Funcionalidade 3: [Breve descrição da funcionalidade]
-- [ ] ...
+- [ ] Realizar Cadastro: Permite que o usuário crie uma conta no aplicativo utilizando e-mail e senha ou pelo google. O processo é feito através do Firebase Authentication.
+- [ ] Realizar Login: Autentica o usuário já cadastrado, garantindo acesso às suas receitas, favoritos e configurações do perfil. Também utiliza o Firebase Authentication.
+- [ ] Listar receitas: Exibe uma lista de receitas obtidas da API pública de receitas, permitindo que o usuário navegue e visualize detalhes de cada prato.
+- [ ] Pesquisar receita por nome: Possibilita ao usuário buscar receitas pelo nome, filtrando os resultados exibidos na tela.
+- [ ] Filtrar receita por doce, salgada ou agridoce: Permite refinar a visualização das receitas exibidas aplicando filtros de categoria conforme o tipo da receita.
+- [ ] Adicionar receita própria: O usuário pode criar e cadastrar uma nova receita, preenchendo informações como nome, ingredientes e preparo. As receitas são salvas no aplicativo.
+- [ ] Listar receitas próprias: Exibe somente as receitas criadas pelo usuário, permitindo acesso rápido ao conteúdo armazenado.
+- [ ] Adicionar e remover favoritos: O usuário pode favoritar ou desfavoritar receitas. Os favoritos são salvos na Firestore, associados ao usuário autenticado.
+- [ ] Listar favoritos: Mostra apenas as receitas que foram marcadas como favoritas, carregando os dados diretamente da Firestore.
+- [ ] Adicionar foto de perfil: Permite ao usuário escolher uma imagem para seu perfil e armazená-la, exibindo-a na tela de conta.
 
 ---
 
