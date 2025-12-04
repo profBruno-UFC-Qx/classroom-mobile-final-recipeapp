@@ -8,32 +8,29 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+class HomeState(
+    val loading: Boolean = false,
+    val error: String? = null,
+    val recipes: List<Recipe> = emptyList()
+)
 class HomeViewModel: ViewModel() {
     private val repository = RecipeRepository()
 
-    private val _recipes = MutableStateFlow<List<Recipe>>(emptyList())
-    val recipes: StateFlow<List<Recipe>> = _recipes
-
-    private val _loading = MutableStateFlow(true)
-    val loading: StateFlow<Boolean> = _loading
-
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
+    private val _state = MutableStateFlow(HomeState())
+    val state: StateFlow<HomeState> = _state
 
     init {
         loadRecipes()
     }
-
-    private fun loadRecipes() {
+    fun loadRecipes() {
         viewModelScope.launch {
+            _state.value = HomeState(loading = true)
+
             try {
-                _loading.value = true
                 val result = repository.getRecipes(page = 1, limit = 20)
-                _recipes.value = result
-            } catch (e: Exception){
-                _error.value = e.message
-            } finally {
-                _loading.value = false
+                _state.value = HomeState(recipes = result)
+            } catch (e: Exception) {
+                _state.value = HomeState(error = e.localizedMessage)
             }
         }
     }

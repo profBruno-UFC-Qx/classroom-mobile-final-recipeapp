@@ -17,44 +17,36 @@ import com.example.recipeapp.ui.components.RecipeCard
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
-    val recipes by viewModel.recipes.collectAsState()
-    val loading by viewModel.loading.collectAsState()
-    val error by viewModel.error.collectAsState()
+    val ui = viewModel.state.collectAsState().value
 
     Scaffold { padding ->
-        Box(
-            modifier = Modifier.fillMaxSize().padding(padding)
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
         ) {
             when {
-                loading -> {
+                ui.loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
-                error != null -> {
+                ui.error != null -> {
                     Text(
-                        text = "Erro ao carregar receitas: $error",
-                        modifier = Modifier.align(Alignment.Center),
-                        color = MaterialTheme.colorScheme.error
+                        text = "Erro: ${ui.error}",
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
-
                 else -> {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp)
                     ) {
-                        items(recipes){ recipe ->
+                        items(ui.recipes) {recipe ->
                             RecipeCard(
                                 recipe = recipe,
                                 onClick = {
-                                    // Futura navegação
-                                    Log.d(recipe.receita, "Esta é sua receita")
-                                },
-                                onToggleFavorite = {
-
-                                },
-                                isFavorite = false
+                                    // Future navigation
+                                }
                             )
                         }
                     }
