@@ -28,5 +28,5 @@ class AuthRepository(private val auth: FirebaseAuth = FirebaseAuth.getInstance()
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         return auth.signInWithCredential(credential).await()
     }
-    
+
 }
