@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.auth.AuthState
+import com.example.recipeapp.ui.components.HeaderComponent
 
 @Composable
 fun LoginScreen(

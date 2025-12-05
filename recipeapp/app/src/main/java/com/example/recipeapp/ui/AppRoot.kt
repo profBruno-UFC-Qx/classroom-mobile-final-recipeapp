@@ -24,7 +24,7 @@ fun AppRoot(
             }
         )
     } else {
-        HomeScreen()
+        HomeScreen(authViewModel = authViewModel)
     }
 }
 
