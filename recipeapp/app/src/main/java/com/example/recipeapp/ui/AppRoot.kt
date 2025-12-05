@@ -21,8 +21,7 @@ fun AppRoot(
             state = authState,
             onLoginEmail = { email, pass, remember ->
                 authViewModel.login(email, pass, remember)
-            },
-            onGoogleLogin = {}
+            }
         )
     } else {
         HomeScreen()

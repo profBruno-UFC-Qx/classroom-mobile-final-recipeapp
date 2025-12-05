@@ -42,8 +42,7 @@ import com.example.recipeapp.ui.auth.AuthState
 @Composable
 fun LoginScreen(
     state: AuthState,
-    onLoginEmail: (String, String, Boolean) -> Unit,
-    onGoogleLogin: () -> Unit
+    onLoginEmail: (String, String, Boolean) -> Unit
 ){
     Column(
         modifier = Modifier
@@ -170,35 +169,21 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "ou faça login com:",
-                color = MaterialTheme.colorScheme.onPrimary,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Button(onClick = {}) {
-                Image(
-                    painter = painterResource(R.drawable.google_icon),
-                    contentDescription = "Ícone do google",
-                    modifier = Modifier.graphicsLayer(
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.tertiary,
-                            BlendMode.SrcIn)
-                    )
-                )
-            }
             Spacer(modifier = Modifier.height(6.dp))
             Row {
                 Text(
                     text = "Não possui conta?",
                     color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 22.sp
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "Cadastre-se",
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.titleMedium
-                )
+                    Text(
+                        text = "Cadastre-se",
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 22.sp,
+                    )
             }
         }
         Spacer(Modifier.height(12.dp))

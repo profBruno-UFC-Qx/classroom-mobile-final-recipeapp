@@ -23,10 +23,4 @@ class AuthRepository(private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     suspend fun signOut(){
         auth.signOut()
     }
-
-    suspend fun loginWithGoogleIdToken(idToken: String): AuthResult{
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        return auth.signInWithCredential(credential).await()
-    }
-
 }

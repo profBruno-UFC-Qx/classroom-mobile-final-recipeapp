@@ -8,7 +8,6 @@ data class LocalAuth(
     val login: (String, String, Boolean) -> Unit,
     val register: (String, String) -> Unit,
     val logout: () -> Unit,
-    val loginWithGoogle: () -> Unit
 )
 
 val localAuthState = staticCompositionLocalOf<LocalAuth> {

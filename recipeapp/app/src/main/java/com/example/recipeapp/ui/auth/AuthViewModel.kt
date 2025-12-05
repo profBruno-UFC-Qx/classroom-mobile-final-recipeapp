@@ -84,20 +84,4 @@ class AuthViewModel (
             }
         }
     }
-
-    fun handleGoogleSignInIdToken(idToken: String, remember: Boolean = false) {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(loading = true, error = null)
-            try {
-                repository.loginWithGoogleIdToken(idToken)
-                if(remember) {
-                    val expiration = System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 // 30 dias
-                    sessionManager.saveExpiration(expiration)
-                }
-                _state.value = AuthState(user = repository.currentUser(), loading = false)
-            } catch (e: Exception){
-                    _state.value = AuthState(user = null, loading = false, error = e.localizedMessage)
-            }
-        }
-    }
 }
