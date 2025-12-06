@@ -6,7 +6,7 @@ import com.google.firebase.auth.FirebaseUser
 data class LocalAuth(
     val user: FirebaseUser?,
     val login: (String, String, Boolean) -> Unit,
-    val register: (String, String) -> Unit,
+    val register: (String, String, Boolean) -> Unit,
     val logout: () -> Unit,
 )
 

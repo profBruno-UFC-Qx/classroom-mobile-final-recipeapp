@@ -54,11 +54,16 @@ class AuthViewModel (
         }
     }
 
-    fun register(email: String, password: String){
+    fun register(email: String, password: String, remember: Boolean){
         viewModelScope.launch {
             _state.value = _state.value.copy(loading = true, error = null)
             try {
                 repository.registerWithEmail(email, password)
+                val expiration = if (remember)
+                    System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 // 30 dias
+                else
+                    System.currentTimeMillis() + 1000L // 1 segundo
+                sessionManager.saveExpiration(expiration)
                 _state.value = AuthState(user = repository.currentUser(), loading = false)
             } catch (e: Exception) {
                 _state.value = AuthState(user = null, )
