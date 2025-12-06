@@ -147,7 +147,7 @@ fun LoginScreen(
                     onCheckedChange = { rememberMe = it },
                     colors = CheckboxDefaults.colors(
                         checkmarkColor = MaterialTheme.colorScheme.tertiary,
-                        uncheckedColor = MaterialTheme.colorScheme.tertiary,
+                        uncheckedColor = MaterialTheme.colorScheme.onPrimary,
                         checkedColor = MaterialTheme.colorScheme.secondary
                     )
                 )
