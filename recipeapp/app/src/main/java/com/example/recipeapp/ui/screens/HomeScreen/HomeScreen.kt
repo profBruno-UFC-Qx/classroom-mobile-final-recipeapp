@@ -19,8 +19,9 @@ import com.example.recipeapp.ui.auth.AuthViewModel
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-               authViewModel: AuthViewModel)
-{
+               authViewModel: AuthViewModel,
+               onLogout: () -> Unit
+) {
     val ui = viewModel.state.collectAsState().value
     Scaffold(modifier = Modifier.padding(WindowInsets.statusBars.asPaddingValues())) { padding ->
         HeaderComponent(tittle = "Home",
@@ -28,6 +29,7 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
             rightIcon = R.drawable.ic_logo_icon,
             onLeftClick = {
                 authViewModel.logout()
+                onLogout()
             },
             isLogo = true
         )

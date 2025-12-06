@@ -18,9 +18,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,13 +40,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.auth.AuthState
+import com.example.recipeapp.ui.auth.AuthViewModel
 import com.example.recipeapp.ui.components.HeaderComponent
 
 @Composable
 fun LoginScreen(
-    state: AuthState,
-    onLoginEmail: (String, String, Boolean) -> Unit
+    authViewModel: AuthViewModel,
+    onLoginSucess: () -> Unit,
+    navigateToRegister: () -> Unit
 ){
+    val state by authViewModel.state.collectAsState()
+
+    // Se logar vai para home
+    if (state.user != null) {
+        onLoginSucess()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -117,7 +128,9 @@ fun LoginScreen(
         Spacer(Modifier.height(16.dp))
 
         Button(
-            onClick = { onLoginEmail(email, password, rememberMe) },
+            onClick = {
+                authViewModel.login(email, password, rememberMe)
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             if(state.loading){
@@ -171,7 +184,10 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(6.dp))
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Text(
                     text = "Não possui conta?",
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -179,12 +195,14 @@ fun LoginScreen(
                     fontSize = 22.sp
                 )
                 Spacer(modifier = Modifier.width(4.dp))
+                TextButton(onClick = {navigateToRegister()}) {
                     Text(
                         text = "Cadastre-se",
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                     )
+                }
             }
         }
         Spacer(Modifier.height(12.dp))

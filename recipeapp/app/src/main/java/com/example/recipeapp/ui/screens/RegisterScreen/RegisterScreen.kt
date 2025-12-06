@@ -2,6 +2,7 @@ package com.example.recipeapp.ui.screens.RegisterScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +19,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,12 +39,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.auth.AuthState
+import com.example.recipeapp.ui.auth.AuthViewModel
 
 @Composable
 fun RegisterScreen(
-    state: AuthState,
-    onRegister: (String, String, Boolean) -> Unit
+    authViewModel: AuthViewModel,
+    navigateToLogin: () -> Unit,
+    onRegisterSucess: () -> Unit
 ){
+    val state by authViewModel.state.collectAsState()
+
+    // Navega para home caso registre
+    if (state.user != null) {
+        onRegisterSucess()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -114,7 +125,7 @@ fun RegisterScreen(
         Spacer(Modifier.height(16.dp))
 
         Button(
-            onClick = { onRegister(email, password, rememberMe) },
+            onClick = { authViewModel.register(email, password, rememberMe) },
             modifier = Modifier.fillMaxWidth()
         ) {
             if(state.loading){
@@ -138,7 +149,10 @@ fun RegisterScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(6.dp))
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Text(
                     text = "Já possui uma conta?",
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -146,12 +160,14 @@ fun RegisterScreen(
                     fontSize = 22.sp
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "Entrar",
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontSize = 22.sp,
-                )
+                TextButton(onClick = {navigateToLogin()}) {
+                    Text(
+                        text = "Entrar",
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 22.sp
+                    )
+                }
             }
         }
         Spacer(Modifier.height(12.dp))
