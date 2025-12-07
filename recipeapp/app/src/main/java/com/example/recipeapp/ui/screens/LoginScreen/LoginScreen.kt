@@ -46,15 +46,9 @@ import com.example.recipeapp.ui.components.HeaderComponent
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
-    onLoginSucess: () -> Unit,
     navigateToRegister: () -> Unit
 ){
     val state by authViewModel.state.collectAsState()
-
-    // Se logar vai para home
-    if (state.user != null) {
-        onLoginSucess()
-    }
 
     Column(
         modifier = Modifier

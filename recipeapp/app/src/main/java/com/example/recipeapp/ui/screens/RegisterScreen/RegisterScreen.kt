@@ -44,15 +44,9 @@ import com.example.recipeapp.ui.auth.AuthViewModel
 @Composable
 fun RegisterScreen(
     authViewModel: AuthViewModel,
-    navigateToLogin: () -> Unit,
-    onRegisterSucess: () -> Unit
+    navigateToLogin: () -> Unit
 ){
     val state by authViewModel.state.collectAsState()
-
-    // Navega para home caso registre
-    if (state.user != null) {
-        onRegisterSucess()
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()

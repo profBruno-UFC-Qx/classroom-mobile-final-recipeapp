@@ -23,8 +23,9 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
                onLogout: () -> Unit
 ) {
     val ui = viewModel.state.collectAsState().value
-    Scaffold(modifier = Modifier.padding(WindowInsets.statusBars.asPaddingValues())) { padding ->
-        HeaderComponent(tittle = "Home",
+    Scaffold(modifier = Modifier.padding()) { padding ->
+        HeaderComponent(
+            tittle = "Tela Inicial",
             leftIcon = R.drawable.ic_box_arrow_in_left,
             rightIcon = R.drawable.ic_logo_icon,
             onLeftClick = {

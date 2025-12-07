@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.recipeapp.ui.auth.AuthViewModel
+import com.example.recipeapp.ui.navigation.TabsScreen
 import com.example.recipeapp.ui.screens.HomeScreen.HomeScreen
 import com.example.recipeapp.ui.screens.LoginScreen.LoginScreen
 import com.example.recipeapp.ui.screens.RegisterScreen.RegisterScreen
@@ -23,45 +24,30 @@ fun AppRoot(
 
     NavHost(
         navController = navController,
-        startDestination = if (authState.user == null) "login" else "home"
-    ){
+        startDestination = if (authState.user == null) "login" else "tabs"
+    ) {
+
         composable("login") {
             LoginScreen(
                 authViewModel = authViewModel,
-                onLoginSucess = {
-                    navController.navigate("home"){
-                        popUpTo("login") {inclusive = true}
-                    }
-                },
                 navigateToRegister = {
                     navController.navigate("register")
                 }
             )
         }
+
         composable("register") {
             RegisterScreen(
                 authViewModel = authViewModel,
                 navigateToLogin = {
                     navController.popBackStack()
-                },
-                onRegisterSucess = {
-                    navController.navigate("home") {
-                        popUpTo("register") { inclusive = true }
-                    }
                 }
             )
         }
-        composable("home") {
-            HomeScreen(
-                authViewModel = authViewModel,
-                onLogout = {
-                    navController.navigate("login"){
-                        popUpTo("home") {inclusive = true}
-                    }
-                }
-            )
+
+        composable("tabs") {
+            TabsScreen(authViewModel)
         }
     }
-
 }
 
