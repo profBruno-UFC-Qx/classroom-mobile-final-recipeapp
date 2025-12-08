@@ -105,10 +105,13 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth(),
             textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold),
             trailingIcon = {
+                val image = if (viewPassword) R.drawable.ic_eye_slash else R.drawable.ic_eye
+                val description = if (viewPassword) "Esconder senha" else "Ver senha"
+
                 Image(
-                    painter = painterResource(R.drawable.ic_eye),
-                    contentDescription = "Ver senha",
-                    modifier = Modifier.graphicsLayer(
+                    painter = painterResource(image),
+                    contentDescription = description,
+                    modifier =  Modifier.clickable(onClick = {viewPassword = !viewPassword}).graphicsLayer(
                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary,
                             BlendMode.SrcIn)
                     )

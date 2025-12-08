@@ -2,6 +2,7 @@ package com.example.recipeapp.ui.screens.LoginScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +37,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -107,11 +110,15 @@ fun LoginScreen(
             label = { Text("Senha") },
             modifier = Modifier.fillMaxWidth(),
             textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold),
+            visualTransformation = if (viewPassword) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
+                val image = if (viewPassword) R.drawable.ic_eye_slash else R.drawable.ic_eye
+                val description = if (viewPassword) "Esconder senha" else "Ver senha"
+
                 Image(
-                    painter = painterResource(R.drawable.ic_eye),
-                    contentDescription = "Ver senha",
-                    modifier = Modifier.graphicsLayer(
+                    painter = painterResource(image),
+                    contentDescription = description,
+                    modifier =  Modifier.clickable(onClick = {viewPassword = !viewPassword}).graphicsLayer(
                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary,
                             BlendMode.SrcIn)
                     )
