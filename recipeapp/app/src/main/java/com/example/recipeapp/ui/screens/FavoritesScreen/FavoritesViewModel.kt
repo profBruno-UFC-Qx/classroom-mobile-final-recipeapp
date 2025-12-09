@@ -25,10 +25,8 @@ class FavoritesViewModel: ViewModel () {
             _loading.value = true
             try {
                 val result = repository.getFavorites(uid)
-                Log.d("FavoritesViewModel", "Favoritos recebidos: $result")
                 _favorites.value = result
             } catch (e: Exception) {
-                Log.e("FavoritesViewModel", "Erro ao carregar favoritos", e)
                 _favorites.value = emptyList()
             } finally {
                 _loading.value = false
