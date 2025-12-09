@@ -18,22 +18,37 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.recipeapp.data.model.Recipe
+import com.example.recipeapp.ui.auth.AuthViewModel
+import com.example.recipeapp.ui.screens.FavoritesScreen.FavoritesViewModel
 
 @Composable
 fun RecipeCard(
     recipe: Recipe,
     onClick: () -> Unit,
-    onToggleFavorite: (() -> Unit)? = null,
-    isFavorite: Boolean = false
+    uid: String,
+    viewModel: FavoritesViewModel,
 ) {
+    val favorites by viewModel.favorites.collectAsState()
+    val isFavorite = favorites.any {it.id == recipe.id}
+
+
+    fun onToggleFavorite(){
+        viewModel.onToggleFavorites(uid, recipe)
+        viewModel.loadFavorites(uid)
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -57,8 +72,6 @@ fun RecipeCard(
                         .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
                         .background(Color.DarkGray)
                 )
-
-                if(onToggleFavorite != null){
                     Icon(
                         imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
@@ -69,7 +82,7 @@ fun RecipeCard(
                             .clickable{onToggleFavorite()},
                         contentDescription = if (isFavorite) "Desfavoritar" else "Favoritar"
                     )
-                }
+
             }
 
             Column(modifier = Modifier.padding(12.dp)) {

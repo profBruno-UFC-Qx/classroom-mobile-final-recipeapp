@@ -1,7 +1,5 @@
 package com.example.recipeapp.ui.navigation
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -12,16 +10,24 @@ import com.example.recipeapp.ui.screens.HomeScreen.HomeScreen
 import com.example.recipeapp.ui.screens.MyRecipesScreen.MyRecipesScreen
 import com.example.recipeapp.ui.screens.PefilScreen.PerfilScreen
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.recipeapp.ui.screens.FavoritesScreen.FavoritesViewModel
 
 @Composable
 fun TabsNavHost(navController: NavHostController, authViewModel: AuthViewModel) {
+    val favoritesViewModel: FavoritesViewModel = viewModel()
     NavHost(navController, startDestination = BottomNavItem.Home.route) {
-
-        composable(BottomNavItem.Home.route) { HomeScreen(
+        composable(BottomNavItem.Home.route) {
+            val authState = authViewModel.state.collectAsState().value
+            val user = authState.user
+            if (user == null){
+                return@composable
+            }
+            HomeScreen(
             authViewModel = authViewModel,
-            onLogout = {authViewModel.logout()}
+            onLogout = {authViewModel.logout()},
+                uid = user.uid,
+                favoritesViewModel = favoritesViewModel
         ) }
         composable(BottomNavItem.MyRecipes.route) { MyRecipesScreen(
             onLeftClick = {
@@ -39,7 +45,8 @@ fun TabsNavHost(navController: NavHostController, authViewModel: AuthViewModel) 
                 uid = user.uid,
                 onLeftClick = {
                     navController.popBackStack()
-                }
+                },
+                viewModel = favoritesViewModel
         ) }
         composable(BottomNavItem.Perfil.route) { PerfilScreen(
             onLeftClick = {

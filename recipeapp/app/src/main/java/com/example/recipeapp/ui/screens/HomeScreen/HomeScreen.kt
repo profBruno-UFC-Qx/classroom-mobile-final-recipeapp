@@ -15,14 +15,19 @@ import androidx.compose.ui.unit.dp
 import com.example.recipeapp.ui.components.HeaderComponent
 import com.example.recipeapp.ui.components.RecipeCard
 import com.example.recipeapp.R
+import com.example.recipeapp.data.repository.FavoriteRepository
 import com.example.recipeapp.ui.auth.AuthViewModel
+import com.example.recipeapp.ui.screens.FavoritesScreen.FavoritesViewModel
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
                authViewModel: AuthViewModel,
-               onLogout: () -> Unit
+               onLogout: () -> Unit,
+               uid: String,
+               favoritesViewModel: FavoritesViewModel
 ) {
     val ui = viewModel.state.collectAsState().value
+
     Scaffold(modifier = Modifier.padding()) { padding ->
         HeaderComponent(
             tittle = "Tela Inicial",
@@ -60,7 +65,9 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
                                     recipe = recipe,
                                     onClick = {
                                         // Future navigation
-                                    }
+                                    },
+                                    uid = uid,
+                                    viewModel = favoritesViewModel
                                 )
                             }
                         }

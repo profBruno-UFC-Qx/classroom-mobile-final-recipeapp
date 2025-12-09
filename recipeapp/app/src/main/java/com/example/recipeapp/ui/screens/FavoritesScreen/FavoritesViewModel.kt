@@ -58,4 +58,20 @@ class FavoritesViewModel: ViewModel () {
         }
     }
 
+    fun onToggleFavorites(uid: String, recipe: Recipe){
+        viewModelScope.launch {
+            val isFavorite = _favorites.value.any {it.id == recipe.id}
+
+            try {
+                if(isFavorite){
+                    repository.removeFavorite(uid, recipe.id.toString())
+                } else {
+                    repository.addFavorite(uid, recipe)
+                }
+                loadFavorites(uid)
+            } catch (e: kotlin.Exception){
+                println("Erro ao adicionar favoritos: ${e.message}")
+            }
+        }
+    }
 }

@@ -30,7 +30,7 @@ import com.example.recipeapp.ui.components.RecipeCard
 @Composable
 fun FavoritesScreen(
     uid: String,
-    viewModel: FavoritesViewModel = viewModel(),
+    viewModel: FavoritesViewModel,
     onLeftClick: () -> Unit
 ){
     val favorites by viewModel.favorites.collectAsState()
@@ -94,7 +94,9 @@ fun FavoritesScreen(
                                 recipe = favorite,
                                 onClick = {
                                     // Future navigation
-                                }
+                                },
+                                uid = uid,
+                                viewModel = viewModel
                             )
                         }
                     }
