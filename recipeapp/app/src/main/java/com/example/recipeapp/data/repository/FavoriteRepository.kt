@@ -15,7 +15,7 @@ class FavoriteRepository(
 
     suspend fun addFavorite(uid: String, recipe: Recipe){
         favoritesCollection(uid)
-            .document()
+            .document(recipe.id.toString())
             .set(recipe)
             .await()
     }
