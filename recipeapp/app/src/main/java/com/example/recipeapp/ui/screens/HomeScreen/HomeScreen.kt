@@ -28,6 +28,10 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
 ) {
     val ui = viewModel.state.collectAsState().value
 
+    LaunchedEffect(uid) {
+        favoritesViewModel.loadFavorites(uid)
+    }
+
     Scaffold(modifier = Modifier.padding()) { padding ->
         HeaderComponent(
             tittle = "Tela Inicial",
