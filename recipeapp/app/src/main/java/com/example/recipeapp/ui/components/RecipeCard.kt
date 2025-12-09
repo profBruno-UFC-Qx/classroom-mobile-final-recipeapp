@@ -48,7 +48,7 @@ fun RecipeCard(
         Column(modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.fillMaxWidth()){
                 AsyncImage(
-                    model = recipe.linkImagem,
+                    model = recipe.link_imagem,
                     contentDescription = recipe.receita,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
