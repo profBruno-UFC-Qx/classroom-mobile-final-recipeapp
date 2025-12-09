@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -15,7 +17,8 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
+        buildConfigField("String", "CLOUDINARY_CLOUD_NAME", "${project.properties["CLOUDINARY_CLOUD_NAME"]}")
+        buildConfigField("String", "CLOUDINARY_UPLOAD_PRESET", "${project.properties["CLOUDINARY_UPLOAD_PRESET"]}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -37,6 +40,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -78,4 +82,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.4.0")
     // Navegação
     implementation("androidx.navigation:navigation-compose:2.8.0")
+    // okHttp
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
