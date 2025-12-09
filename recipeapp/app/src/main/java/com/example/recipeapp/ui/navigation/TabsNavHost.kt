@@ -16,10 +16,12 @@ import com.example.recipeapp.ui.screens.FavoritesScreen.FavoritesViewModel
 @Composable
 fun TabsNavHost(navController: NavHostController, authViewModel: AuthViewModel) {
     val favoritesViewModel: FavoritesViewModel = viewModel()
+    // Auth State
+    val authState = authViewModel.state.collectAsState().value
+    val user = authState.user
+
     NavHost(navController, startDestination = BottomNavItem.Home.route) {
         composable(BottomNavItem.Home.route) {
-            val authState = authViewModel.state.collectAsState().value
-            val user = authState.user
             if (user == null){
                 return@composable
             }
@@ -35,9 +37,6 @@ fun TabsNavHost(navController: NavHostController, authViewModel: AuthViewModel) 
             }
         ) }
         composable(BottomNavItem.Favorites.route) {
-            val authState = authViewModel.state.collectAsState().value
-            val user = authState.user
-
             if(user == null){
                 return@composable
             }
