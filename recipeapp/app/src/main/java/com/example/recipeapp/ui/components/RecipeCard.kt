@@ -1,5 +1,6 @@
 package com.example.recipeapp.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -24,11 +25,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.recipeapp.R
 import com.example.recipeapp.data.model.Recipe
 import com.example.recipeapp.ui.auth.AuthViewModel
 import com.example.recipeapp.ui.screens.FavoritesScreen.FavoritesViewModel
@@ -72,17 +78,23 @@ fun RecipeCard(
                         .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
                         .background(Color.DarkGray)
                 )
-                    Icon(
-                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp)
-                            .size(32.dp)
-                            .clickable{onToggleFavorite()},
-                        contentDescription = if (isFavorite) "Desfavoritar" else "Favoritar"
-                    )
+                    val image = if(isFavorite) R.drawable.ic_heart_fill else R.drawable.ic_heart
+                    val description = if (isFavorite) "Remover favorito" else "Adicionar aos favoritos"
 
+                Image(
+                    painter = painterResource(image),
+                    contentDescription = description,
+                    modifier =  Modifier.clickable(onClick = {onToggleFavorite()})
+                        .graphicsLayer(
+                        colorFilter = ColorFilter.tint(
+                            color = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
+                            BlendMode.SrcIn
+                            )
+                        )
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .size(32.dp)
+                )
             }
 
             Column(modifier = Modifier.padding(12.dp)) {
