@@ -31,10 +31,16 @@ fun TabsNavHost(navController: NavHostController, authViewModel: AuthViewModel) 
                 uid = user.uid,
                 favoritesViewModel = favoritesViewModel
         ) }
-        composable(BottomNavItem.MyRecipes.route) { MyRecipesScreen(
-            onLeftClick = {
-                navController.popBackStack()
+        composable(BottomNavItem.MyRecipes.route) {
+            if (user == null){
+                return@composable
             }
+                MyRecipesScreen(
+                onLeftClick = {
+                    navController.popBackStack()
+                },
+                uid = user.uid,
+                favoritesViewModel = favoritesViewModel
         ) }
         composable(BottomNavItem.Favorites.route) {
             if(user == null){

@@ -10,7 +10,7 @@ class MyRecipeRepository(
     private fun myRecipesCollection(uid: String) =
         db.collection("users")
             .document(uid)
-            .collection("favorites")
+            .collection("recipes")
 
     suspend fun addRecipe(uid: String, recipe: Recipe, recipeId: String){
         myRecipesCollection(uid)
