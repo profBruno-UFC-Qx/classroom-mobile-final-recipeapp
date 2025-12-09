@@ -70,6 +70,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     // Firebase Auth
     implementation("com.google.firebase:firebase-auth")
+    // Firestore
+    implementation("com.google.firebase:firebase-firestore")
     // Coil (imagens)
     implementation("io.coil-kt:coil-compose:2.7.0")
     // Google signin
