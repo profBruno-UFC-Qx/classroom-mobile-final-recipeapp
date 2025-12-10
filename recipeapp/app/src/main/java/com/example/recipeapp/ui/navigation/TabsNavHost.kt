@@ -11,7 +11,10 @@ import com.example.recipeapp.ui.screens.MyRecipesScreen.MyRecipesScreen
 import com.example.recipeapp.ui.screens.PefilScreen.PerfilScreen
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.recipeapp.data.model.Recipe
 import com.example.recipeapp.ui.screens.FavoritesScreen.FavoritesViewModel
+import com.example.recipeapp.ui.screens.RecipeDetailScreen.RecipeDetailScreen
 
 @Composable
 fun TabsNavHost(navController: NavHostController, authViewModel: AuthViewModel) {
@@ -29,18 +32,20 @@ fun TabsNavHost(navController: NavHostController, authViewModel: AuthViewModel) 
             authViewModel = authViewModel,
             onLogout = {authViewModel.logout()},
                 uid = user.uid,
-                favoritesViewModel = favoritesViewModel
+                favoritesViewModel = favoritesViewModel,
+                navController = navController
         ) }
         composable(BottomNavItem.MyRecipes.route) {
             if (user == null){
                 return@composable
             }
                 MyRecipesScreen(
-                onLeftClick = {
-                    navController.popBackStack()
-                },
-                uid = user.uid,
-                favoritesViewModel = favoritesViewModel
+                    onLeftClick = {
+                        navController.popBackStack()
+                    },
+                    uid = user.uid,
+                    favoritesViewModel = favoritesViewModel,
+                    navController = navController
         ) }
         composable(BottomNavItem.Favorites.route) {
             if(user == null){
@@ -51,12 +56,28 @@ fun TabsNavHost(navController: NavHostController, authViewModel: AuthViewModel) 
                 onLeftClick = {
                     navController.popBackStack()
                 },
-                viewModel = favoritesViewModel
+                viewModel = favoritesViewModel,
+                navController = navController
         ) }
         composable(BottomNavItem.Perfil.route) { PerfilScreen(
             onLeftClick = {
                 navController.popBackStack()
             }
         ) }
+
+        composable("details") { backStackEntry ->
+            val recipe = navController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.get<Recipe>("recipe")
+
+            if (recipe != null) {
+                RecipeDetailScreen(
+                    recipe = recipe,
+                    onLeftClick = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+        }
     }
 }

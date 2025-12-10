@@ -15,7 +15,7 @@ fun BottomBar(navController: NavHostController) {
         BottomNavItem.Home,
         BottomNavItem.MyRecipes,
         BottomNavItem.Favorites,
-        BottomNavItem.Perfil
+        BottomNavItem.Perfil,
     )
 
     NavigationBar {

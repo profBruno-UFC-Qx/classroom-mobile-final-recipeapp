@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.components.HeaderComponent
 import com.example.recipeapp.ui.components.RecipeCard
@@ -31,7 +32,8 @@ import com.example.recipeapp.ui.components.RecipeCard
 fun FavoritesScreen(
     uid: String,
     viewModel: FavoritesViewModel,
-    onLeftClick: () -> Unit
+    onLeftClick: () -> Unit,
+    navController: NavController
 ){
     val favorites by viewModel.favorites.collectAsState()
     val loading by viewModel.loading.collectAsState()
@@ -93,7 +95,8 @@ fun FavoritesScreen(
                             RecipeCard(
                                 recipe = favorite,
                                 onClick = {
-                                    // Future navigation
+                                    navController.currentBackStackEntry?.savedStateHandle?.set("recipe", favorite)
+                                    navController.navigate("details")
                                 },
                                 uid = uid,
                                 viewModel = viewModel

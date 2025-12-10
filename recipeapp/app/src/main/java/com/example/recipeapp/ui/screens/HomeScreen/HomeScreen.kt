@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.recipeapp.ui.components.HeaderComponent
 import com.example.recipeapp.ui.components.RecipeCard
 import com.example.recipeapp.R
@@ -24,7 +25,8 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
                authViewModel: AuthViewModel,
                onLogout: () -> Unit,
                uid: String,
-               favoritesViewModel: FavoritesViewModel
+               favoritesViewModel: FavoritesViewModel,
+               navController: NavController
 ) {
     val ui = viewModel.state.collectAsState().value
 
@@ -68,7 +70,8 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
                                 RecipeCard(
                                     recipe = recipe,
                                     onClick = {
-                                        // Future navigation
+                                        navController.currentBackStackEntry?.savedStateHandle?.set("recipe", recipe)
+                                        navController.navigate("details")
                                     },
                                     uid = uid,
                                     viewModel = favoritesViewModel
