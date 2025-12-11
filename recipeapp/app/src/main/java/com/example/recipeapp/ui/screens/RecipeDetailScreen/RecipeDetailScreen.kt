@@ -3,6 +3,7 @@ package com.example.recipeapp.ui.screens.RecipeDetailScreen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ColorScheme
@@ -38,7 +41,7 @@ fun RecipeDetailScreen(
     recipe: Recipe,
     onLeftClick: () -> Unit
 ) {
-    Scaffold { paddingValues ->
+    Scaffold { innerPadding ->
         Column( modifier = Modifier.padding(horizontal = 12.dp)) {
             HeaderComponent(
                 tittle = "Detalhes Receita",
@@ -49,54 +52,121 @@ fun RecipeDetailScreen(
 
             Spacer(modifier = Modifier.height(22.dp))
 
-            Column(
-                modifier = Modifier.fillMaxWidth()
-                    .clip(RoundedCornerShape(24.dp))
-            ) {
-                AsyncImage(
-                        model = recipe.link_imagem,
-                        contentDescription = recipe.receita,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .height(300.dp)
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.onBackground)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(18.dp))
-            // Split ingredients
-            val ingredientsList = recipe.ingredientes.split(",")
-            Card(
+            LazyColumn (
                 modifier = Modifier
-                .fillMaxWidth()
-                .padding(),
-                shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.onBackground
-                )
-            ) {
-                Text(
-                    text = "Ingredientes:",
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontSize = 22.sp,
-                    textAlign = TextAlign.Left,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                ){
-                    items(ingredientsList){ ingredient ->
+                    .padding(horizontal = 12.dp)
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 22.dp)
+            ){
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                            .clip(RoundedCornerShape(24.dp))
+                    ) {
+                        AsyncImage(
+                            model = recipe.link_imagem,
+                            contentDescription = recipe.receita,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .height(300.dp)
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.onBackground)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(18.dp))
+                }
+
+                // Igredients
+                val ingredientsList = recipe.ingredientes.split(",")
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.onBackground
+                        )
+                    ) {
                         Text(
-                            text = "- ${ingredient}",
+                            text = "Ingredientes:",
                             color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.titleMedium,
-                            fontSize = 18.sp,
-                            textAlign = TextAlign.Left
+                            fontSize = 22.sp,
+                            textAlign = TextAlign.Left,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
-                        Spacer(modifier = Modifier.height(6.dp))
+                        if(ingredientsList.isNotEmpty()){
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                ingredientsList.forEach { ingredient ->
+                                    Text(
+                                        text = "- $ingredient",
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        fontSize = 18.sp
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                }
+                            }
+                        } else {
+                            Text(
+                                text = "Nenhum ingrediente encontrado.",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 18.sp,
+                                textAlign = TextAlign.Left,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                // Modo de preparo
+                val regex = """(?s)(\d\.\s*.*?)(?=\s*\d\.\s*|$)""".toRegex()
+                val steps = regex.findAll(recipe.modo_preparo).map {it.value}.toList()
+
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.onBackground
+                        )
+                    ) {
+                        Text(
+                            text = "Passo a passo:",
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 22.sp,
+                            textAlign = TextAlign.Left,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                        if(steps.isNotEmpty()){
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                steps.forEach { step ->
+                                    Text(
+                                        text = step,
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        fontSize = 18.sp
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                }
+                            }
+                        } else {
+                            Text(
+                                text = "Nenhum passo encontrado.",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 18.sp,
+                                textAlign = TextAlign.Left,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
                     }
                 }
             }
