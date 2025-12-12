@@ -38,8 +38,7 @@ fun HeaderComponent(
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
             .zIndex(2f)
-            .padding(horizontal = 20.dp)
-            .height(60.dp),
+            .padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ){
@@ -60,7 +59,7 @@ fun HeaderComponent(
                 text = tittle,
                 color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.titleMedium,
-                fontSize = 32.sp
+                fontSize = 28.sp
             )
             if(isLogo == true) {
                 Image(
