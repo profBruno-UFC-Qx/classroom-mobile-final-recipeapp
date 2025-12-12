@@ -28,55 +28,66 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
                favoritesViewModel: FavoritesViewModel,
                navController: NavController
 ) {
-    val ui = viewModel.state.collectAsState().value
+    val loading = viewModel.state.collectAsState().value.loading
+    val error = viewModel.state.collectAsState().value.error
+    val recipes = viewModel.state.collectAsState().value.recipes
 
     LaunchedEffect(uid) {
         favoritesViewModel.loadFavorites(uid)
     }
 
-    Scaffold(modifier = Modifier.padding()) { padding ->
-        HeaderComponent(
-            tittle = "Tela Inicial",
-            leftIcon = R.drawable.ic_box_arrow_in_left,
-            rightIcon = R.drawable.ic_logo_icon,
-            onLeftClick = {
-                authViewModel.logout()
-                onLogout()
-            },
-            isLogo = true
-        )
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-            ) {
-                when {
-                    ui.loading -> {
+    Scaffold { padding ->
+        Column() {
+            HeaderComponent(
+                tittle = "Tela Inicial",
+                leftIcon = R.drawable.ic_box_arrow_in_left,
+                rightIcon = R.drawable.ic_logo_icon,
+                onLeftClick = {
+                    authViewModel.logout()
+                    onLogout()
+                },
+                isLogo = true
+            )
+
+            Spacer(modifier = Modifier.height(22.dp))
+
+            when {
+                loading -> {
+                    Box(modifier = Modifier.padding(padding).fillMaxSize()) {
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
-                    ui.error != null -> {
+                }
+
+                error != null -> {
+                    Box(modifier = Modifier.padding(padding).fillMaxSize()) {
                         Text(
-                            text = "Erro: ${ui.error}",
+                            text = "Erro: ${error}",
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
-                    else -> {
-                        LazyColumn(
-                            contentPadding = PaddingValues(16.dp)
-                        ) {
-                            items(ui.recipes) {recipe ->
-                                RecipeCard(
-                                    recipe = recipe,
-                                    onClick = {
-                                        navController.currentBackStackEntry?.savedStateHandle?.set("recipe", recipe)
-                                        navController.navigate("details")
-                                    },
-                                    uid = uid,
-                                    viewModel = favoritesViewModel
-                                )
-                            }
+                }
+
+                else -> {
+
+                    LazyColumn(
+                        contentPadding = PaddingValues(16.dp)
+                    ) {
+                        items(recipes) { recipe ->
+                            RecipeCard(
+                                recipe = recipe,
+                                onClick = {
+                                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                                        "recipe",
+                                        recipe
+                                    )
+                                    navController.navigate("details")
+                                },
+                                uid = uid,
+                                viewModel = favoritesViewModel
+                            )
                         }
                     }
                 }
