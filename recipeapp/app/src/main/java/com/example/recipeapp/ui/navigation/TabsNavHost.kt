@@ -2,6 +2,11 @@ package com.example.recipeapp.ui.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -17,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.recipeapp.data.model.Recipe
+import com.example.recipeapp.ui.screens.AddRecipeScreen.AddRecipeScreen
 import com.example.recipeapp.ui.screens.FavoritesScreen.FavoritesViewModel
 import com.example.recipeapp.ui.screens.RecipeDetailScreen.RecipeDetailScreen
 
@@ -50,7 +56,18 @@ fun TabsNavHost(navController: NavHostController, authViewModel: AuthViewModel) 
                 return@composable
             }
             Scaffold(
-                bottomBar = { BottomBar(navController) }
+                bottomBar = { BottomBar(navController)},
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = {
+                            navController.navigate("AddRecipe")
+                        },
+                        containerColor = MaterialTheme.colorScheme.onBackground,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ){
+                        Icon(Icons.Filled.Add, "Adicionar Receita")
+                    }
+                }
             ) {
                 MyRecipesScreen(
                     onLeftClick = {
@@ -104,6 +121,14 @@ fun TabsNavHost(navController: NavHostController, authViewModel: AuthViewModel) 
                     }
                 )
             }
+        }
+
+        composable("AddRecipe") { backStackEntry ->
+            AddRecipeScreen(
+                onLeftClick = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
