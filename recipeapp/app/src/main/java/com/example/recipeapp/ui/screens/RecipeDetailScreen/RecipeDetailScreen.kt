@@ -41,8 +41,8 @@ fun RecipeDetailScreen(
     recipe: Recipe,
     onLeftClick: () -> Unit
 ) {
-    Scaffold { innerPadding ->
-        Column( modifier = Modifier.padding(horizontal = 12.dp)) {
+    Scaffold { padding ->
+        Column( modifier = Modifier.padding(padding)) {
             HeaderComponent(
                 tittle = "Detalhes Receita",
                 leftIcon = R.drawable.ic_left_arrow,

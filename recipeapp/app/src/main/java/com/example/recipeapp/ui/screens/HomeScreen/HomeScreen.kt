@@ -37,7 +37,9 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
     }
 
     Scaffold { padding ->
-        Column() {
+        Column(
+            modifier = Modifier.padding(padding)
+        ) {
             HeaderComponent(
                 tittle = "Tela Inicial",
                 leftIcon = R.drawable.ic_box_arrow_in_left,

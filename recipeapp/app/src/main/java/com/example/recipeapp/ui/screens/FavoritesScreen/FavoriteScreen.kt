@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,7 +28,6 @@ import com.example.recipeapp.R
 import com.example.recipeapp.ui.components.HeaderComponent
 import com.example.recipeapp.ui.components.RecipeCard
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun FavoritesScreen(
     uid: String,
@@ -42,8 +42,10 @@ fun FavoritesScreen(
         viewModel.loadFavorites(uid)
     }
 
-    Scaffold {
-        Column() {
+    Scaffold { padding ->
+        Column(
+            modifier = Modifier.padding(padding)
+        ) {
             HeaderComponent(
                 tittle = "Favoritos",
                 leftIcon = R.drawable.ic_left_arrow,
