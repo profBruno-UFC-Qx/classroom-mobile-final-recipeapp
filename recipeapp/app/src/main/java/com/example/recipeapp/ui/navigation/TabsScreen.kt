@@ -11,11 +11,7 @@ import com.example.recipeapp.ui.auth.AuthViewModel
 @Composable
 fun TabsScreen(authViewModel: AuthViewModel) {
     val navController = rememberNavController()
-    Scaffold(
-        bottomBar = { BottomBar(navController) }
-    ) { padding ->
-        Box(Modifier.padding(padding)) {
-            TabsNavHost(navController, authViewModel)
-        }
-    }
+
+    TabsNavHost(navController, authViewModel)
+
 }
