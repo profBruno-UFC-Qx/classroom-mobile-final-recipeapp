@@ -8,14 +8,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.components.HeaderComponent
+import com.example.recipeapp.ui.navigation.BottomBar
 
 @Composable
 fun PerfilScreen(
-    onLeftClick: () -> Unit
+    onLeftClick: () -> Unit,
+    navController: NavController
 ){
-    Scaffold { padding ->
+    Scaffold(
+        bottomBar = { BottomBar(navController as NavHostController) }
+    ) { padding ->
         Column(
             modifier = Modifier.padding(padding)
         ) {

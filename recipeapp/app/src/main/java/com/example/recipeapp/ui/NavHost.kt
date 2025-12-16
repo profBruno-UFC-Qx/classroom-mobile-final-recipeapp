@@ -65,9 +65,6 @@ fun AppRoot(
             if (user == null){
                 return@composable
             }
-            Scaffold(
-                bottomBar = { BottomBar(navController) }
-            ) {
                 HomeScreen(
                     authViewModel = authViewModel,
                     onLogout = {authViewModel.logout()},
@@ -75,27 +72,12 @@ fun AppRoot(
                     favoritesViewModel = favoritesViewModel,
                     navController = navController,
                 )
-            }
         }
 
         composable(BottomNavItem.MyRecipes.route) {
             if (user == null){
                 return@composable
             }
-            Scaffold(
-                bottomBar = { BottomBar(navController)},
-                floatingActionButton = {
-                    FloatingActionButton(
-                        onClick = {
-                            navController.navigate("AddRecipe")
-                        },
-                        containerColor = MaterialTheme.colorScheme.onBackground,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ){
-                        Icon(Icons.Filled.Add, "Adicionar Receita")
-                    }
-                }
-            ) {
                 MyRecipesScreen(
                     onLeftClick = {
                         navController.popBackStack()
@@ -104,16 +86,12 @@ fun AppRoot(
                     favoritesViewModel = favoritesViewModel,
                     navController = navController
                 )
-            }
         }
 
         composable(BottomNavItem.Favorites.route) {
             if(user == null){
                 return@composable
             }
-            Scaffold(
-                bottomBar = { BottomBar(navController) }
-            ) {
                 FavoritesScreen(
                     uid = user.uid,
                     onLeftClick = {
@@ -122,19 +100,15 @@ fun AppRoot(
                     viewModel = favoritesViewModel,
                     navController = navController
                 )
-            }
         }
 
         composable(BottomNavItem.Perfil.route) {
-            Scaffold(
-                bottomBar = { BottomBar(navController) }
-            ) {
                 PerfilScreen(
                     onLeftClick = {
                         navController.popBackStack()
-                    }
+                    },
+                    navController = navController
                 )
-            }
         }
 
         composable("details") { backStackEntry ->

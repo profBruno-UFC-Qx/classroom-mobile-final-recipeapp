@@ -24,9 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.components.HeaderComponent
 import com.example.recipeapp.ui.components.RecipeCard
+import com.example.recipeapp.ui.navigation.BottomBar
 
 @Composable
 fun FavoritesScreen(
@@ -42,7 +44,9 @@ fun FavoritesScreen(
         viewModel.loadFavorites(uid)
     }
 
-    Scaffold { padding ->
+    Scaffold(
+        bottomBar = { BottomBar(navController as NavHostController) }
+    ) { padding ->
         Column(
             modifier = Modifier.padding(padding)
         ) {

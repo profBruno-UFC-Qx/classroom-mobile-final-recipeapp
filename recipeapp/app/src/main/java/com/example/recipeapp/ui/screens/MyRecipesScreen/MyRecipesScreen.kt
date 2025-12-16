@@ -10,7 +10,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,9 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.components.HeaderComponent
 import com.example.recipeapp.ui.components.RecipeCard
+import com.example.recipeapp.ui.navigation.BottomBar
 import com.example.recipeapp.ui.screens.FavoritesScreen.FavoritesViewModel
 
 
@@ -43,7 +49,20 @@ fun MyRecipesScreen(
     LaunchedEffect(uid) {
         viewModel.loadRecipes(uid)
     }
-    Scaffold { padding ->
+    Scaffold(
+        bottomBar = { BottomBar(navController as NavHostController)},
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate("AddRecipe")
+                },
+                containerColor = MaterialTheme.colorScheme.onBackground,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ){
+                Icon(Icons.Filled.Add, "Adicionar Receita")
+            }
+        }
+    ) { padding ->
         Column(
             modifier = Modifier.padding(padding)
         ) {
