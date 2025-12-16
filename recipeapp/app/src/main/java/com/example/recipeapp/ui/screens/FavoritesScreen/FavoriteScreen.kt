@@ -34,7 +34,6 @@ import com.example.recipeapp.ui.navigation.BottomBar
 fun FavoritesScreen(
     uid: String,
     viewModel: FavoritesViewModel,
-    onLeftClick: () -> Unit,
     navController: NavController
 ){
     val favorites by viewModel.favorites.collectAsState()
@@ -55,7 +54,7 @@ fun FavoritesScreen(
                 leftIcon = R.drawable.ic_left_arrow,
                 rightIcon = R.drawable.ic_heart,
                 onLeftClick = {
-                    onLeftClick()
+                    navController.popBackStack()
                 },
                 isLogo = false
             )

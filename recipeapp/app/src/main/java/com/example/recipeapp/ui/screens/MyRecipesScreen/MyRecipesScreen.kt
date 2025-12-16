@@ -42,7 +42,6 @@ import com.example.recipeapp.ui.screens.FavoritesScreen.FavoritesViewModel
 @Composable
 fun MyRecipesScreen(
     viewModel: MyRecipeViewModel = viewModel(),
-    onLeftClick: () -> Unit,
     uid: String,
     favoritesViewModel: FavoritesViewModel,
     navController: NavController
@@ -87,7 +86,7 @@ fun MyRecipesScreen(
                 leftIcon = R.drawable.ic_left_arrow,
                 rightIcon = R.drawable.ic_clipboard,
                 onLeftClick = {
-                    onLeftClick()
+                    navController.popBackStack()
                 },
                 isLogo = false
             )

@@ -79,9 +79,6 @@ fun AppRoot(
                 return@composable
             }
                 MyRecipesScreen(
-                    onLeftClick = {
-                        navController.popBackStack()
-                    },
                     uid = user.uid,
                     favoritesViewModel = favoritesViewModel,
                     navController = navController
@@ -94,9 +91,6 @@ fun AppRoot(
             }
                 FavoritesScreen(
                     uid = user.uid,
-                    onLeftClick = {
-                        navController.popBackStack()
-                    },
                     viewModel = favoritesViewModel,
                     navController = navController
                 )
@@ -104,9 +98,6 @@ fun AppRoot(
 
         composable(BottomNavItem.Perfil.route) {
                 PerfilScreen(
-                    onLeftClick = {
-                        navController.popBackStack()
-                    },
                     navController = navController
                 )
         }

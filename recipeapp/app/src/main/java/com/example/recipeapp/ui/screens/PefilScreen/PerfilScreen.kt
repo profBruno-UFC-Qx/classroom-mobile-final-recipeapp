@@ -16,7 +16,6 @@ import com.example.recipeapp.ui.navigation.BottomBar
 
 @Composable
 fun PerfilScreen(
-    onLeftClick: () -> Unit,
     navController: NavController
 ){
     Scaffold(
@@ -30,7 +29,7 @@ fun PerfilScreen(
                 leftIcon = R.drawable.ic_left_arrow,
                 rightIcon = R.drawable.ic_person,
                 onLeftClick = {
-                    onLeftClick()
+                    navController.popBackStack()
                 },
                 isLogo = false
             )
