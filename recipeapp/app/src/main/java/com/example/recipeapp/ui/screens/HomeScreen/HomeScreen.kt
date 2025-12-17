@@ -24,7 +24,6 @@ import com.example.recipeapp.ui.screens.FavoritesScreen.FavoritesViewModel
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-               authViewModel: AuthViewModel,
                onLogout: () -> Unit,
                uid: String,
                favoritesViewModel: FavoritesViewModel,
@@ -49,7 +48,6 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
                 leftIcon = R.drawable.ic_box_arrow_in_left,
                 rightIcon = R.drawable.ic_logo_icon,
                 onLeftClick = {
-                    authViewModel.logout()
                     onLogout()
                 },
                 isLogo = true

@@ -66,7 +66,6 @@ fun AppRoot(
                 return@composable
             }
                 HomeScreen(
-                    authViewModel = authViewModel,
                     onLogout = {authViewModel.logout()},
                     uid = user.uid,
                     favoritesViewModel = favoritesViewModel,
@@ -97,8 +96,14 @@ fun AppRoot(
         }
 
         composable(BottomNavItem.Perfil.route) {
+            if(user == null){
+                return@composable
+            }
                 PerfilScreen(
-                    navController = navController
+                    navController = navController,
+                    uid = user.uid,
+                    userEmail = user.email.toString(),
+                    displayName = user.displayName.toString()
                 )
         }
 
