@@ -1,5 +1,6 @@
 package com.example.recipeapp.ui.screens.PefilScreen
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.data.repository.ProfilePictureRepository
@@ -16,6 +17,10 @@ class PerfilScreenViewModel(
     private val _loading = MutableStateFlow<Boolean>(false)
     val loading = _loading.asStateFlow()
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error = _error.asStateFlow()
+
+    fun clearError() { _error.value = null }
     fun addProfilePicture(uid: String, pictureUrl: String){
         viewModelScope.launch {
             _loading.value = true
@@ -41,4 +46,23 @@ class PerfilScreenViewModel(
             _loading.value = false
         }
     }
+
+    fun uploadAndSavePicture(context: android.content.Context, uid: String, uri: Uri){
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val uploadedUrl = repository.uploadToCloudinary(context, uri)
+                if (uploadedUrl != null) {
+                    addProfilePicture(uid, uploadedUrl)
+                } else {
+                    _error.value = "Falha ao enviar imagem para o servidor."
+                }
+            } catch (e: Exception) {
+                _error.value = "Erro inesperado: ${e.message}"
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
 }

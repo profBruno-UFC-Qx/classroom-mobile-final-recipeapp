@@ -85,4 +85,6 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.0")
     // okHttp
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    // Cloudinary
+    implementation("com.cloudinary:cloudinary-android:2.5.0")
 }

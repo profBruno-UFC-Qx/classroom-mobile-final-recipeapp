@@ -24,7 +24,7 @@ object CloudinaryService {
                 val requestBody = MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("file", base64)
-                    .addFormDataPart("upload_present", cloudPresent)
+                    .addFormDataPart("upload_preset", cloudPresent)
                     .build()
 
                 val request = Request.Builder()

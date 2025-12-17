@@ -1,8 +1,12 @@
 package com.example.recipeapp.ui.screens.PefilScreen
 
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.view.Display
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -43,9 +48,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -53,6 +60,7 @@ import coil.compose.AsyncImage
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.components.HeaderComponent
 import com.example.recipeapp.ui.navigation.BottomBar
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,14 +71,77 @@ fun PerfilScreen(
     userEmail: String,
     displayName: String
 ){
+    val context = LocalContext.current
+
     val pictureUrl by viewModel.profilePicture.collectAsState()
     val loading by viewModel.loading.collectAsState()
 
     var showOptions by remember { mutableStateOf(false) }
 
+    // Get Profile Picture
     LaunchedEffect(uid) {
         viewModel.getProfilePicture(uid)
     }
+
+    // Pictures functions
+
+    val tempUri = remember {
+        val file = File.createTempFile("profile_tmp", ".jpg", context.externalCacheDir)
+        FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { viewModel.uploadAndSavePicture(context, uid, it) }
+    }
+
+    val cameraLaucher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { sucess ->
+        if(sucess){
+            viewModel.uploadAndSavePicture(context, uid, tempUri)
+        }
+    }
+    // Error Alerts
+    var showErrorAlert by remember {mutableStateOf(false)}
+    var errorMessage by remember { mutableStateOf("") }
+
+    fun triggerError(msg: String){
+        errorMessage = msg
+        showErrorAlert = true
+    }
+
+    val apiError by viewModel.error.collectAsState()
+
+    LaunchedEffect(apiError) {
+        apiError?.let {
+            triggerError(it)
+            viewModel.clearError()
+        }
+    }
+    
+    val permissionTakePictureLaucher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGrated ->
+        if(isGrated){
+            cameraLaucher.launch(tempUri)
+        } else {
+            triggerError("Você precisa permitir o acesso à câmera para tirar uma foto.")
+        }
+    }
+
+    val permissionGetInLibraryLaucher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGrated ->
+        if(isGrated){
+            galleryLauncher.launch("image/*")
+        } else {
+            triggerError("Você precisa permitir o acesso à galeria para escolher a foto.")
+        }
+    }
+
+
     Scaffold(
         bottomBar = { BottomBar(navController as NavHostController) },
         floatingActionButton = {
@@ -133,13 +204,13 @@ fun PerfilScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = displayName ?: "Usuário",
+                text = displayName,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(Modifier.height(12.dp))
             Text(
-                text = userEmail ?: "Usuário",
+                text = userEmail,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onPrimary
             )
@@ -155,7 +226,7 @@ fun PerfilScreen(
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            // Tirar foto
+                            permissionTakePictureLaucher.launch(Manifest.permission.CAMERA)
                             showOptions = false
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground)
@@ -170,7 +241,7 @@ fun PerfilScreen(
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground),
                         onClick = {
-                            // Escolher da galeria
+                            permissionGetInLibraryLaucher.launch(Manifest.permission.CAMERA)
                             showOptions = false
                         }
                     ) {
@@ -195,6 +266,21 @@ fun PerfilScreen(
                     }
                 }
             }
+        }
+
+        if(showErrorAlert){
+            AlertDialog(
+                onDismissRequest = {showErrorAlert = false},
+                confirmButton = {
+                    Button(onClick = {
+                        showErrorAlert = false
+                    }) {
+                        Text("Ok")
+                    }
+                },
+                title = {Text("Atenção")},
+                text = {Text(errorMessage)}
+            )
         }
     }
 }

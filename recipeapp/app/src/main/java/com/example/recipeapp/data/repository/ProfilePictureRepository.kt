@@ -1,10 +1,18 @@
 package com.example.recipeapp.data.repository
 
+import android.content.Context
+import android.net.Uri
+import com.cloudinary.android.MediaManager
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
 import com.example.recipeapp.data.model.Recipe
+import com.example.recipeapp.data.service.CloudinaryService
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import okhttp3.internal.userAgent
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 
 class ProfilePictureRepository(
@@ -14,6 +22,9 @@ class ProfilePictureRepository(
         db.collection("users")
             .document(uid)
 
+    suspend fun uploadToCloudinary(context: Context, imageUri: Uri): String? {
+        return CloudinaryService.uploadImage(context, imageUri)
+    }
     suspend fun addProfilePicture(uid: String, pictureUrl: String){
         try {
             val data = mapOf(
