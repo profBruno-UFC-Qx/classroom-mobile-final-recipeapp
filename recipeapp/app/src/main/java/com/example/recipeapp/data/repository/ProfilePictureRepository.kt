@@ -22,7 +22,7 @@ class ProfilePictureRepository(
         db.collection("users")
             .document(uid)
 
-    suspend fun uploadToCloudinary(context: Context, imageUri: Uri): String? {
+    suspend fun uploadToCloudinary(context: Context, imageUri: Uri): Result<String> {
         return CloudinaryService.uploadImage(context, imageUri)
     }
     suspend fun addProfilePicture(uid: String, pictureUrl: String){

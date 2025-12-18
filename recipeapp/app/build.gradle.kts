@@ -18,8 +18,6 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "CLOUDINARY_CLOUD_NAME", "${project.properties["CLOUDINARY_CLOUD_NAME"]}")
-        buildConfigField("String", "CLOUDINARY_UPLOAD_PRESET", "${project.properties["CLOUDINARY_UPLOAD_PRESET"]}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

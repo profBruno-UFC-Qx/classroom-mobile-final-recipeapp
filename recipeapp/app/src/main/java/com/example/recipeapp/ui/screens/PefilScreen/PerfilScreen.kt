@@ -2,15 +2,11 @@ package com.example.recipeapp.ui.screens.PefilScreen
 
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.net.Uri
-import android.view.Display
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -28,7 +25,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -47,11 +43,10 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -74,36 +69,14 @@ fun PerfilScreen(
     val context = LocalContext.current
 
     val pictureUrl by viewModel.profilePicture.collectAsState()
+    val pendingUri by viewModel.pendingUri.collectAsState()
     val loading by viewModel.loading.collectAsState()
+    val error by viewModel.error.collectAsState()
 
     var showOptions by remember { mutableStateOf(false) }
 
-    // Get Profile Picture
-    LaunchedEffect(uid) {
-        viewModel.getProfilePicture(uid)
-    }
+    // Errors alerts
 
-    // Pictures functions
-
-    val tempUri = remember {
-        val file = File.createTempFile("profile_tmp", ".jpg", context.externalCacheDir)
-        FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-    }
-
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let { viewModel.uploadAndSavePicture(context, uid, it) }
-    }
-
-    val cameraLaucher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture()
-    ) { sucess ->
-        if(sucess){
-            viewModel.uploadAndSavePicture(context, uid, tempUri)
-        }
-    }
-    // Error Alerts
     var showErrorAlert by remember {mutableStateOf(false)}
     var errorMessage by remember { mutableStateOf("") }
 
@@ -112,52 +85,59 @@ fun PerfilScreen(
         showErrorAlert = true
     }
 
-    val apiError by viewModel.error.collectAsState()
-
-    LaunchedEffect(apiError) {
-        apiError?.let {
-            triggerError(it)
-            viewModel.clearError()
-        }
+    // Get Profile Picture
+    LaunchedEffect(uid) {
+        viewModel.getProfilePicture(uid)
     }
-    
-    val permissionTakePictureLaucher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGrated ->
-        if(isGrated){
-            cameraLaucher.launch(tempUri)
-        } else {
-            triggerError("Você precisa permitir o acesso à câmera para tirar uma foto.")
-        }
+    // get error
+    LaunchedEffect(error) {
+        error?.let {triggerError(it); viewModel.clearError()}
     }
 
-    val permissionGetInLibraryLaucher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGrated ->
-        if(isGrated){
-            galleryLauncher.launch("image/*")
-        } else {
-            triggerError("Você precisa permitir o acesso à galeria para escolher a foto.")
-        }
+    // Pictures functions
+
+    val tempUri = remember {
+        val directory = File(context.externalCacheDir, "camera")
+        if (!directory.exists()) directory.mkdirs()
+        val file = File(directory, "profile_tmp.jpg")
+        FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     }
 
+    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()){ uri ->
+        uri.let { viewModel.onImageSelected(it)}
+    }
+
+    val cameraLaucher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { sucess ->
+        if(sucess) viewModel.onImageSelected(tempUri)
+    }
+
+    // Permissions
+    val permissionTakePictureLaucher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGrated ->
+        if(isGrated) cameraLaucher.launch(tempUri) else triggerError("Permissão negada")
+    }
+
+    val permissionGetInLibraryLaucher = rememberLauncherForActivityResult((ActivityResultContracts.RequestPermission())) { isGrated ->
+        if(isGrated) galleryLauncher.launch("image/*")
+    }
 
     Scaffold(
         bottomBar = { BottomBar(navController as NavHostController) },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {showOptions = true},
-                containerColor = MaterialTheme.colorScheme.onBackground,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Row(
-                    modifier = Modifier.padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text("Alterar foto de perfil")
+                if(pendingUri == null){
+                    FloatingActionButton(
+                        onClick = {showOptions = true},
+                        containerColor = MaterialTheme.colorScheme.onBackground,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text("Alterar foto de perfil")
+                        }
+                    }
                 }
-            }
         }
     ) { padding ->
         Column(
@@ -176,44 +156,97 @@ fun PerfilScreen(
             )
             Spacer(modifier = Modifier.height(32.dp))
 
-            Box(
-                modifier = Modifier.size(220.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.onBackground)
-                    .border(width = 4.dp, color = MaterialTheme.colorScheme.tertiary, CircleShape),
-                contentAlignment = Alignment.Center
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                if (loading){
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                } else if (pictureUrl != null){
-                    AsyncImage(
-                        model = pictureUrl,
-                        contentDescription = "Foto de perfil",
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(R.drawable.ic_person_fill),
-                        contentDescription = "Sem foto de perfil",
-                        modifier = Modifier.size(120.dp).graphicsLayer(colorFilter = ColorFilter.tint(
-                            MaterialTheme.colorScheme.onPrimary, blendMode = BlendMode.SrcIn))
-                    )
+                Box(
+                    modifier = Modifier.size(220.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.onBackground)
+                        .border(width = 4.dp, color = MaterialTheme.colorScheme.tertiary, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (loading){
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    } else {
+                        val modelToRender = pendingUri ?: pictureUrl
+
+                        if(modelToRender != null){
+                            AsyncImage(
+                                model = modelToRender,
+                                contentDescription = "Foto de perfil",
+                                modifier = Modifier.fillMaxWidth().clip(CircleShape)
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(R.drawable.ic_person_fill),
+                                contentDescription = "Sem foto de perfil",
+                                modifier = Modifier.size(120.dp).graphicsLayer(colorFilter = ColorFilter.tint(
+                                    MaterialTheme.colorScheme.onPrimary, blendMode = BlendMode.SrcIn))
+                            )
+                        }
+                    }
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Se existir uma imagem pendente mostra os botões de salvar ou cancelar alterações
+                if(pendingUri != null && !loading){
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            "Deseja salvar as alterações?",
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Button(
+                                onClick = {viewModel.confirmUpload(context, uid)},
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Green)
+                            ){
+                                Text(
+                                    "Salvar",
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Button(
+                                onClick = {viewModel.cancelUpload()},
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                            ){
+                                Text(
+                                    "Cancelar",
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+                Text(
+                    text = displayName,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = userEmail,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = displayName,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-            Spacer(Modifier.height(12.dp))
-            Text(
-                text = userEmail,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
         }
 
         if(showOptions){
