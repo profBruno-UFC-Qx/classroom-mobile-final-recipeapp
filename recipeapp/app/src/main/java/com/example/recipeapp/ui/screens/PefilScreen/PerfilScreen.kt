@@ -52,6 +52,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.components.HeaderComponent
 import com.example.recipeapp.ui.navigation.BottomBar
@@ -175,7 +177,11 @@ fun PerfilScreen(
 
                         if(modelToRender != null){
                             AsyncImage(
-                                model = modelToRender,
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(modelToRender)
+                                    .crossfade(true)
+                                    .transformations(CircleCropTransformation())
+                                    .build(),
                                 contentDescription = "Foto de perfil",
                                 modifier = Modifier.fillMaxWidth().clip(CircleShape)
                             )
