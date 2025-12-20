@@ -85,4 +85,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     // Cloudinary
     implementation("com.cloudinary:cloudinary-android:2.5.0")
+    // Data Store
+    implementation("androidx.datastore:datastore-preferences:1.2.0")
 }

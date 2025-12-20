@@ -2,27 +2,44 @@ package com.example.recipeapp.data.auth
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
-class SessionManager(context: Context){
-    private val prefs: SharedPreferences = context.getSharedPreferences("session_prefs", Context.MODE_PRIVATE)
+
+private val Context.sessionDataStore by preferencesDataStore(
+    name = "session_prefs"
+)
+class SessionManager(private val context: Context){
 
     companion object {
-        private const val KEY_SESSION_EXPIRATION = "session_expiration"
+        private val KEY_SESSION_EXPIRATION = longPreferencesKey("session_expiration")
     }
 
-    fun saveExpiration(expirationMilli: Long){
-        prefs.edit().putLong(KEY_SESSION_EXPIRATION, expirationMilli).apply()
+    suspend fun saveExpiration(expirationMilli: Long){
+        context.sessionDataStore.edit { prefs ->
+            prefs[KEY_SESSION_EXPIRATION] = expirationMilli
+        }
     }
 
-    fun getExpiration(): Long = prefs.getLong(KEY_SESSION_EXPIRATION, 0L)
-
-    fun clear() {
-        prefs.edit().remove(KEY_SESSION_EXPIRATION).apply()
+    suspend fun getExpiration(): Long{
+        return context.sessionDataStore.data.map { prefs ->
+            prefs[KEY_SESSION_EXPIRATION] ?: 0L
+        }.first()
     }
 
-    fun isSessionExpired(): Boolean {
-        val exp = getExpiration()
-        if(exp == 0L) return true
-        return System.currentTimeMillis() > exp
+    suspend fun clear() {
+        context.sessionDataStore.edit { prefs ->
+            prefs.remove(KEY_SESSION_EXPIRATION)
+        }
     }
+
+    suspend fun isSessionExpired(): Boolean {
+        val expiration = getExpiration()
+        if(expiration == 0L) return true
+        return System.currentTimeMillis() > expiration
+    }
+
 }
