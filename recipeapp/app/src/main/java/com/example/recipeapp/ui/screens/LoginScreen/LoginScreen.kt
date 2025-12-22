@@ -42,6 +42,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.auth.AuthState
 import com.example.recipeapp.ui.auth.AuthViewModel
@@ -50,7 +51,7 @@ import com.example.recipeapp.ui.components.HeaderComponent
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
-    navigateToRegister: () -> Unit
+    navController: NavController
 ){
     val state by authViewModel.state.collectAsState()
 
@@ -173,11 +174,13 @@ fun LoginScreen(
                     style = MaterialTheme.typography.titleMedium
                 )
             }
-            Text(
-                text = "Esqueceu senha?",
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.titleMedium
-            )
+            TextButton(onClick = {navController.navigate("resetPassword")}) {
+                Text(
+                    text = "Esqueceu senha?",
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
         }
         Spacer(Modifier.height(8.dp))
 
@@ -198,7 +201,7 @@ fun LoginScreen(
                     fontSize = 22.sp
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                TextButton(onClick = {navigateToRegister()}) {
+                TextButton(onClick = {navController.navigate("register")}) {
                     Text(
                         text = "Cadastre-se",
                         color = MaterialTheme.colorScheme.secondary,

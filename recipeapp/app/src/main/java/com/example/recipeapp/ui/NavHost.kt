@@ -27,6 +27,8 @@ import com.example.recipeapp.ui.screens.MyRecipesScreen.MyRecipesScreen
 import com.example.recipeapp.ui.screens.PefilScreen.PerfilScreen
 import com.example.recipeapp.ui.screens.RecipeDetailScreen.RecipeDetailScreen
 import com.example.recipeapp.ui.screens.RegisterScreen.RegisterScreen
+import com.example.recipeapp.ui.screens.ResetPasswordScreen.ResetPasswordScreen
+import com.example.recipeapp.ui.screens.ResetPasswordScreen.ResetPasswordViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -46,9 +48,7 @@ fun AppRoot(
         composable("login") {
             LoginScreen(
                 authViewModel = authViewModel,
-                navigateToRegister = {
-                    navController.navigate("register")
-                }
+                navController = navController
             )
         }
 
@@ -58,6 +58,12 @@ fun AppRoot(
                 navigateToLogin = {
                     navController.popBackStack()
                 }
+            )
+        }
+
+        composable("resetPassword") {
+            ResetPasswordScreen(
+                navController = navController
             )
         }
 
