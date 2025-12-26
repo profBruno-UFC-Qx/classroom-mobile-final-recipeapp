@@ -1,22 +1,154 @@
 package com.example.recipeapp.ui.screens.AddRecipeScreen
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import androidx.core.content.FileProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
 import com.example.recipeapp.ui.components.HeaderComponent
 import com.example.recipeapp.R
+import java.io.File
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRecipeScreen(
-    onLeftClick: () -> Unit
+    onLeftClick: () -> Unit,
+    viewModel: AddRecipeViewModel = viewModel()
 ){
+    // Context
+    val context = LocalContext.current
+
+    // View Model states
+
+    val recipeImage by viewModel.recipeImage.collectAsState()
+    val loading by viewModel.loading.collectAsState()
+    val error by viewModel.error.collectAsState()
+
+    // Types
+    var type by remember { mutableStateOf<String?>(null) }
+
+    // Lists
+    val ingredients = remember { mutableStateListOf<String?>(null) }
+    val instructions = remember { mutableStateListOf<String?>(null) }
+
+    // Show options button
+
+    var showOptions by remember { mutableStateOf(false) }
+
+    // Errors alerts
+
+    var showErrorAlert by remember {mutableStateOf(false)}
+    var errorMessage by remember { mutableStateOf("") }
+
+    fun triggerError(msg: String){
+        errorMessage = msg
+        showErrorAlert = true
+    }
+
+    // image functions
+
+    val tempUri = remember {
+        val directory = File(context.externalCacheDir, "camera")
+        if (!directory.exists()) directory.mkdirs()
+        val file = File(directory, "profile_tmp.jpg")
+        FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()){ uri ->
+        uri.let { viewModel.onImageSelected(it)}
+    }
+
+    val cameraLaucher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { sucess ->
+        if(sucess) viewModel.onImageSelected(tempUri)
+    }
+
+    // Permissions
+    val permissionTakePictureLaucher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGrated ->
+        if(isGrated) cameraLaucher.launch(tempUri) else triggerError("Permissão negada")
+    }
+
+    val permissionGetInLibraryLaucher = rememberLauncherForActivityResult((ActivityResultContracts.RequestPermission())) { isGrated ->
+        if(isGrated) galleryLauncher.launch("image/*")
+    }
+
+    // Scroll State
+    val scrollState = rememberScrollState()
     Scaffold { padding ->
         Column(
-            modifier = Modifier.padding(padding)
+            modifier = Modifier.padding(padding).verticalScroll(scrollState)
         ) {
             HeaderComponent(
                 onLeftClick = {onLeftClick()},
@@ -24,10 +156,395 @@ fun AddRecipeScreen(
                 leftIcon = R.drawable.ic_left_arrow,
                 rightIcon = R.drawable.ic_plus_circle
             )
-            Text(
-                "Adicionar receita",
-                color = MaterialTheme.colorScheme.onPrimary
+
+            Spacer(Modifier.height(24.dp))
+
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                // Image Card
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                        .heightIn(min = 240.dp, max = 300.dp)
+                        .padding(horizontal = 12.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.onBackground
+                    )
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        if (recipeImage == null) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(R.drawable.ic_card_image),
+                                    contentDescription = "Adicione uma imagem",
+                                    modifier = Modifier.size(150.dp)
+                                        .graphicsLayer(
+                                            colorFilter = ColorFilter.tint(
+                                                MaterialTheme.colorScheme.onPrimary,
+                                                blendMode = BlendMode.SrcIn
+                                            )
+                                        )
+                                )
+                                Spacer(Modifier.height(22.dp))
+                                Text(
+                                    "Imagem da receita",
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontSize = 28.sp
+                                )
+                            }
+
+                        } else {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(recipeImage)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = "Imagem da receita",
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                        // Button edit image
+                        FloatingActionButton(
+                            onClick = { showOptions = true },
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(12.dp)
+                                .size(50.dp),
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = Color.White,
+                            shape = CircleShape
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.ic_pencil_fill),
+                                contentDescription = "Editar imagem",
+                                modifier = Modifier.size(26.dp)
+                                    .graphicsLayer(
+                                    colorFilter = ColorFilter.tint(
+                                    MaterialTheme.colorScheme.tertiary,
+                                    blendMode = BlendMode.SrcIn
+                                ))
+                            )
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(24.dp))
+
+                // Select Type
+
+                RecipeTypeSelector(
+                    selectedType = type,
+                    onTypeSelected = { type = it }
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                // Ingredients card
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                        .heightIn(min = 300.dp)
+                        .padding(horizontal = 12.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.onBackground
+                    )
+                ) {
+                    Column {
+                        Row(
+                            modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                "Ingredientes:",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 24.sp
+                            )
+
+                            TextButton(onClick = {}) {
+                                Row(
+                                    modifier = Modifier.size(width = 200.dp, height = 40.dp)
+                                        .background(MaterialTheme.colorScheme.background)
+                                        .clip(RoundedCornerShape(12.dp)),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        "Adicionar Ingrediente",
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontSize = 16.sp,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
+
+                            }
+                        }
+
+                        Spacer(Modifier.height(12.dp))
+
+                        if(ingredients.isNotEmpty()){
+                            Column(modifier = Modifier.padding(horizontal = 12.dp)) {
+                                ingredients.forEach { item ->
+                                    item?.let {
+                                        Text (
+                                            "- $it",
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            fontSize = 22.sp
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(24.dp))
+
+                // Instructions card
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                        .heightIn(min = 300.dp)
+                        .padding(horizontal = 12.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.onBackground
+                    )
+                ) {
+                    Column {
+                        Row(
+                            modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                "Instruções:",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 24.sp
+                            )
+
+                            TextButton(onClick = {}) {
+                                Row(
+                                    modifier = Modifier.size(width = 200.dp, height = 40.dp)
+                                        .background(MaterialTheme.colorScheme.background)
+                                        .clip(RoundedCornerShape(12.dp)),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        "Adicionar Instrução",
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontSize = 16.sp,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
+
+                            }
+                        }
+
+                        Spacer(Modifier.height(12.dp))
+
+                        if(instructions.isNotEmpty()){
+                            Column(modifier = Modifier.padding(horizontal = 12.dp)) {
+                                instructions.forEach { item ->
+                                    item?.let {
+                                        Text (
+                                            it,
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            fontSize = 22.sp
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(22.dp))
+
+                Button(
+                    onClick = {},
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp).height(45.dp)
+                ) {
+                    if(loading){
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.size(25.dp)
+                        )
+                    } else {
+                        Text(
+                            "Adicionar receita",
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(32.dp))
+            }
+
+
+            if(showOptions){
+                ModalBottomSheet(
+                    onDismissRequest = {showOptions = false }
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                permissionTakePictureLaucher.launch(Manifest.permission.CAMERA)
+                                showOptions = false
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground)
+                        ) {
+                            Text(
+                                "Tirar Foto",
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground),
+                            onClick = {
+                                permissionGetInLibraryLaucher.launch(Manifest.permission.CAMERA)
+                                showOptions = false
+                            }
+                        ) {
+                            Text(
+                                "Escolher da galeria",
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                viewModel.removeImage()
+                                showOptions = false
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                        ) {
+                            Text(
+                                "Remover foto",
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                    }
+                }
+            }
+
+            if(showErrorAlert){
+                AlertDialog(
+                    onDismissRequest = {showErrorAlert = false},
+                    confirmButton = {
+                        Button(onClick = {
+                            showErrorAlert = false
+                        }) {
+                            Text("Ok")
+                        }
+                    },
+                    title = {Text("Atenção")},
+                    text = {Text(errorMessage)}
+                )
+            }
+        }
+    }
+}
+
+// Type Select Component2
+@Composable
+fun RecipeTypeSelector(
+    selectedType: String?,
+    onTypeSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    val items = listOf("Agridoce", "Doce", "Salgado")
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+    ) {
+        TextButton(
+            onClick = { expanded = true },
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = MaterialTheme.colorScheme.onPrimary
             )
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = selectedType ?: "Selecione o tipo da receita...",
+                    color = if (selectedType == null){
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onPrimary
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = "Abrir seletor"
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+        ) {
+            items.forEach { type ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = type,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 16.sp
+                        )
+                    },
+                    onClick = {
+                        onTypeSelected(type)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 }
