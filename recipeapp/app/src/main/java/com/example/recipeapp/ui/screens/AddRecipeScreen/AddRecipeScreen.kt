@@ -100,9 +100,16 @@ fun AddRecipeScreen(
     // Types
     var type by remember { mutableStateOf<String?>(null) }
 
-    // Lists
-    val ingredients = remember { mutableStateListOf<String?>(null) }
-    val instructions = remember { mutableStateListOf<String?>(null) }
+    // Ingredients States
+
+    var ingredients by remember { mutableStateOf(listOf<String>()) }
+    var showIngredientModal by remember { mutableStateOf(false) }
+    var tempIngredients by remember { mutableStateOf(listOf("")) }
+
+    // instructions state
+    var instructions by remember { mutableStateOf(listOf<String>()) }
+    var showInstructionModal by remember { mutableStateOf(false) }
+    var tempInstructions by remember { mutableStateOf(listOf("")) }
 
     // Show options button
 
@@ -275,7 +282,7 @@ fun AddRecipeScreen(
                                 fontSize = 24.sp
                             )
 
-                            TextButton(onClick = {}) {
+                            TextButton(onClick = {showIngredientModal = true}) {
                                 Row(
                                     modifier = Modifier.size(width = 200.dp, height = 40.dp)
                                         .background(MaterialTheme.colorScheme.background)
@@ -299,16 +306,43 @@ fun AddRecipeScreen(
 
                         if(ingredients.isNotEmpty()){
                             Column(modifier = Modifier.padding(horizontal = 12.dp)) {
-                                ingredients.forEach { item ->
-                                    item?.let {
+                                ingredients.forEachIndexed { index, item ->
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
                                         Text (
-                                            "- $it",
+                                            "- $item",
                                             color = MaterialTheme.colorScheme.onPrimary,
                                             fontSize = 22.sp
+                                        )
+                                        Icon (
+                                            painter = painterResource(R.drawable.ic_delete),
+                                            contentDescription = "Deletar ingrediente",
+                                            tint = Color.Red,
+                                            modifier = Modifier.clickable{
+                                                ingredients = ingredients.filterIndexed { i, _ -> i != index }
+                                            }
                                         )
                                     }
                                 }
                             }
+                        }
+
+                        if(showIngredientModal){
+                            IngredientModal(
+                                tempIngredients = tempIngredients,
+                                onChange = {tempIngredients = it},
+                                onDismiss = {
+                                    showIngredientModal = false
+                                    tempIngredients = listOf("")
+                                },
+                                onSave = {
+                                    ingredients = ingredients + tempIngredients.filter { it.isNotBlank() }
+                                    tempIngredients = listOf("")
+                                    showIngredientModal = false
+                                }
+                            )
                         }
                     }
                 }
@@ -339,7 +373,7 @@ fun AddRecipeScreen(
                                 fontSize = 24.sp
                             )
 
-                            TextButton(onClick = {}) {
+                            TextButton(onClick = {showInstructionModal = true}) {
                                 Row(
                                     modifier = Modifier.size(width = 200.dp, height = 40.dp)
                                         .background(MaterialTheme.colorScheme.background)
@@ -348,7 +382,7 @@ fun AddRecipeScreen(
                                     horizontalArrangement = Arrangement.Center
                                 ) {
                                     Text(
-                                        "Adicionar Instrução",
+                                        "Adicionar instrução",
                                         color = MaterialTheme.colorScheme.onPrimary,
                                         style = MaterialTheme.typography.titleMedium,
                                         fontSize = 16.sp,
@@ -363,16 +397,43 @@ fun AddRecipeScreen(
 
                         if(instructions.isNotEmpty()){
                             Column(modifier = Modifier.padding(horizontal = 12.dp)) {
-                                instructions.forEach { item ->
-                                    item?.let {
+                                instructions.forEachIndexed { index, item ->
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
                                         Text (
-                                            it,
+                                            "${index + 1}. $item",
                                             color = MaterialTheme.colorScheme.onPrimary,
                                             fontSize = 22.sp
+                                        )
+                                        Icon (
+                                            painter = painterResource(R.drawable.ic_delete),
+                                            contentDescription = "Deletar ingrediente",
+                                            tint = Color.Red,
+                                            modifier = Modifier.clickable{
+                                                instructions = instructions.filterIndexed { i, _ -> i != index }
+                                            }
                                         )
                                     }
                                 }
                             }
+                        }
+
+                        if(showInstructionModal){
+                            InstructionModal(
+                                tempInstructions = tempInstructions,
+                                onChange = {tempInstructions = it},
+                                onDismiss = {
+                                    showInstructionModal = false
+                                    tempInstructions = listOf("")
+                                },
+                                onSave = {
+                                    instructions = instructions + tempInstructions.filter { it.isNotBlank() }
+                                    tempInstructions = listOf("")
+                                    showInstructionModal = false
+                                }
+                            )
                         }
                     }
                 }
@@ -547,4 +608,140 @@ fun RecipeTypeSelector(
             }
         }
     }
+}
+// Ingredient modal component
+@Composable
+fun IngredientModal(
+    tempIngredients: List<String>,
+    onChange: (List<String>) -> Unit,
+    onDismiss: () -> Unit,
+    onSave: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(onClick = onSave) {
+                Text("Salvar Ingredientes", color = MaterialTheme.colorScheme.tertiary)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        },
+        title = { Text("Adicionar Ingredientes") },
+        text = {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
+                tempIngredients.forEachIndexed { index, value ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            value = value,
+                            onValueChange = {
+                                val newList = tempIngredients.toMutableList()
+                                newList[index] = it
+                                onChange(newList)
+                            },
+                            label = { Text("Ingrediente ${index + 1}") },
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        if (tempIngredients.size > 1) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_delete),
+                                contentDescription = "Remover",
+                                tint = Color.Red,
+                                modifier = Modifier
+                                    .padding(start = 8.dp)
+                                    .clickable {
+                                        onChange(
+                                            tempIngredients.filterIndexed { i, _ -> i != index }
+                                        )
+                                    }
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                }
+
+                TextButton(
+                    onClick = { onChange(tempIngredients + "") }
+                ) {
+                    Text("Adicionar mais um ingrediente")
+                }
+            }
+        }
+    )
+}
+
+// instruction modal component
+@Composable
+fun InstructionModal(
+    tempInstructions: List<String>,
+    onChange: (List<String>) -> Unit,
+    onDismiss: () -> Unit,
+    onSave: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(onClick = onSave) {
+                Text("Salvar Instruções", color = MaterialTheme.colorScheme.tertiary)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        },
+        title = { Text("Adicionar Instruções") },
+        text = {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
+                tempInstructions.forEachIndexed { index, value ->
+                    Row(
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        OutlinedTextField(
+                            value = value,
+                            onValueChange = {
+                                val newList = tempInstructions.toMutableList()
+                                newList[index] = it
+                                onChange(newList)
+                            },
+                            label = { Text("Passo ${index + 1}") },
+                            modifier = Modifier.weight(1f),
+                            minLines = 2
+                        )
+
+                        if (tempInstructions.size > 1) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_delete),
+                                contentDescription = "Remover",
+                                tint = Color.Red,
+                                modifier = Modifier
+                                    .padding(start = 8.dp)
+                                    .clickable {
+                                        onChange(
+                                            tempInstructions.filterIndexed { i, _ -> i != index }
+                                        )
+                                    }
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                }
+
+                TextButton(
+                    onClick = { onChange(tempInstructions + "") }
+                ) {
+                    Text("Adicionar mais um passo")
+                }
+            }
+        }
+    )
 }
