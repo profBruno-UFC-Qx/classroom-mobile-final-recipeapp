@@ -124,7 +124,8 @@ fun RegisterScreen(
 
         Button(
             onClick = { authViewModel.register(email, password, rememberMe) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = if(email == "" || password == "") false else true
         ) {
             if(state.loading){
                 CircularProgressIndicator(

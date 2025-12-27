@@ -442,7 +442,8 @@ fun AddRecipeScreen(
 
                 Button(
                     onClick = {},
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp).height(45.dp)
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp).height(45.dp),
+                    enabled = if(instructions.isEmpty() || ingredients.isEmpty() || recipeImage == null || type == "") false else true
                 ) {
                     if(loading){
                         CircularProgressIndicator(
@@ -462,7 +463,7 @@ fun AddRecipeScreen(
                 Spacer(Modifier.height(32.dp))
             }
 
-
+            // Image options
             if(showOptions){
                 ModalBottomSheet(
                     onDismissRequest = {showOptions = false }
@@ -515,6 +516,7 @@ fun AddRecipeScreen(
                 }
             }
 
+            // Alert PopUp
             if(showErrorAlert){
                 AlertDialog(
                     onDismissRequest = {showErrorAlert = false},

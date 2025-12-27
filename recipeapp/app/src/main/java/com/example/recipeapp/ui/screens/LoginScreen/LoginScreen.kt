@@ -134,7 +134,8 @@ fun LoginScreen(
             onClick = {
                 authViewModel.login(email, password, rememberMe)
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = if(email == "" || password == "") false else true
         ) {
             if(state.loading){
                 CircularProgressIndicator(
