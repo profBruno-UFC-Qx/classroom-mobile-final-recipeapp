@@ -30,7 +30,7 @@ O público-alvo inclui desde pessoas que cozinham ocasionalmente até entusiasta
 - [x] Listar receitas: Exibe uma lista de receitas obtidas da API pública de receitas, permitindo que o usuário navegue e visualize detalhes de cada prato.
 - [ ] Pesquisar receita por nome: Possibilita ao usuário buscar receitas pelo nome, filtrando os resultados exibidos na tela.
 - [ ] Filtrar receita por doce, salgada ou agridoce: Permite refinar a visualização das receitas exibidas aplicando filtros de categoria conforme o tipo da receita.
-- [ ] Adicionar receita própria: O usuário pode criar e cadastrar uma nova receita, preenchendo informações como nome, ingredientes e preparo. As receitas são salvas no aplicativo.
+- [x] Adicionar receita própria: O usuário pode criar e cadastrar uma nova receita, preenchendo informações como nome, ingredientes e preparo. As receitas são salvas no aplicativo.
 - [x] Listar receitas próprias: Exibe somente as receitas criadas pelo usuário, permitindo acesso rápido ao conteúdo armazenado.
 - [x] Adicionar e remover favoritos: O usuário pode favoritar ou desfavoritar receitas. Os favoritos são salvos na Firestore, associados ao usuário autenticado.
 - [x] Listar favoritos: Mostra apenas as receitas que foram marcadas como favoritas, carregando os dados diretamente da Firestore.
