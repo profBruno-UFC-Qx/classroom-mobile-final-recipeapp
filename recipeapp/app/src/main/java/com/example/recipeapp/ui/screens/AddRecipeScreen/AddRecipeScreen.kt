@@ -86,7 +86,8 @@ import java.io.File
 @Composable
 fun AddRecipeScreen(
     onLeftClick: () -> Unit,
-    viewModel: AddRecipeViewModel = viewModel()
+    viewModel: AddRecipeViewModel = viewModel(),
+    uid: String
 ){
     // Context
     val context = LocalContext.current
@@ -97,6 +98,8 @@ fun AddRecipeScreen(
     val loading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
 
+    // Recipe name
+    var recipeName by remember { mutableStateOf<String>("") }
     // Types
     var type by remember { mutableStateOf<String?>(null) }
 
@@ -115,6 +118,31 @@ fun AddRecipeScreen(
 
     var showOptions by remember { mutableStateOf(false) }
 
+    // Sucess Update
+    val sucess by viewModel.sucess.collectAsState()
+    var showSucessAlert by remember { mutableStateOf(false) }
+    var sucessMessage by remember { mutableStateOf("") }
+
+    fun triggerSucess(msg: String) {
+        sucessMessage = msg
+        showSucessAlert = true
+    }
+
+    if (sucess) {
+        triggerSucess("Receita criada com sucesso")
+
+        // Clear fields
+        recipeName = ""
+        type = null
+        ingredients = emptyList()
+        instructions = emptyList()
+        tempIngredients = listOf("")
+        tempInstructions = listOf("")
+        viewModel.removeImage()
+
+        viewModel.clearSucess()
+    }
+    
     // Errors alerts
 
     var showErrorAlert by remember {mutableStateOf(false)}
@@ -246,6 +274,18 @@ fun AddRecipeScreen(
                         }
                     }
                 }
+
+                Spacer(Modifier.height(24.dp))
+
+                // Recipe name
+                OutlinedTextField(
+                    value = recipeName,
+                    onValueChange = {
+                        recipeName = it
+                    },
+                    label = { Text("Digite um nome para a receita", color = MaterialTheme.colorScheme.onPrimary) },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                )
 
                 Spacer(Modifier.height(24.dp))
 
@@ -441,7 +481,14 @@ fun AddRecipeScreen(
                 Spacer(Modifier.height(22.dp))
 
                 Button(
-                    onClick = {},
+                    onClick = {viewModel.createRecipe(
+                        context = context,
+                        uid = uid,
+                        recipeName = recipeName,
+                        type = type!!,
+                        ingredients = ingredients,
+                        instructions = instructions
+                    )},
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp).height(45.dp),
                     enabled = if(instructions.isEmpty() || ingredients.isEmpty() || recipeImage == null || type == "") false else true
                 ) {
@@ -516,7 +563,7 @@ fun AddRecipeScreen(
                 }
             }
 
-            // Alert PopUp
+            // Alert Erro PopUp
             if(showErrorAlert){
                 AlertDialog(
                     onDismissRequest = {showErrorAlert = false},
@@ -529,6 +576,22 @@ fun AddRecipeScreen(
                     },
                     title = {Text("Atenção")},
                     text = {Text(errorMessage)}
+                )
+            }
+
+            // Alert Sucess PopUp
+            if(showSucessAlert) {
+                AlertDialog(
+                    onDismissRequest = {showSucessAlert = false},
+                    confirmButton = {
+                        Button(onClick = {
+                            showSucessAlert = false
+                        }) {
+                            Text("Ok")
+                        }
+                    },
+                    title = {Text("Sucesso")},
+                    text = {Text(sucessMessage)}
                 )
             }
         }

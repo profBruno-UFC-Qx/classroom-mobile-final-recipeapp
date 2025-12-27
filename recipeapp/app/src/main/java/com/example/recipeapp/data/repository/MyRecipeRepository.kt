@@ -1,6 +1,9 @@
 package com.example.recipeapp.data.repository
 
+import android.content.Context
+import android.net.Uri
 import com.example.recipeapp.data.model.Recipe
+import com.example.recipeapp.data.service.CloudinaryService
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -11,6 +14,10 @@ class MyRecipeRepository(
         db.collection("users")
             .document(uid)
             .collection("recipes")
+
+    suspend fun uploadToCloudinary(context: Context, imageUri: Uri): Result<String> {
+        return CloudinaryService.uploadImage(context, imageUri)
+    }
 
     suspend fun addRecipe(uid: String, recipe: Recipe, recipeId: String){
         myRecipesCollection(uid)
@@ -34,5 +41,9 @@ class MyRecipeRepository(
             println("Erro ao buscar suas receitas ${e.message}")
             emptyList()
         }
+    }
+
+    fun generateRecipeId(uid: String): String{
+        return myRecipesCollection(uid).document().id
     }
 }

@@ -129,10 +129,14 @@ fun AppRoot(
         }
 
         composable("AddRecipe") { backStackEntry ->
+            if(user == null){
+                return@composable
+            }
             AddRecipeScreen(
                 onLeftClick = {
                     navController.popBackStack()
-                }
+                },
+                uid = user.uid
             )
         }
     }
