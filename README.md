@@ -23,17 +23,18 @@ O público-alvo inclui desde pessoas que cozinham ocasionalmente até entusiasta
 ## Funcionalidades Principais
 [Liste as principais funcionalidades do projeto. Use caixas de seleção para que a equipe possa marcar as concluídas nas próximas etapas.]
 
-- [ ] Realizar Cadastro: Permite que o usuário crie uma conta no aplicativo utilizando e-mail e senha ou pelo google. O processo é feito através do Firebase Authentication.
-- [ ] Realizar Login: Autentica o usuário já cadastrado, garantindo acesso às suas receitas, favoritos e configurações do perfil. Também utiliza o Firebase Authentication.
-- [ ] Listar receitas: Exibe uma lista de receitas obtidas da API pública de receitas, permitindo que o usuário navegue e visualize detalhes de cada prato.
+- [x] Realizar Cadastro: Permite que o usuário crie uma conta no aplicativo utilizando e-mail e senha ou pelo google. O processo é feito através do Firebase Authentication.
+- [x] Realizar Login: Autentica o usuário já cadastrado, garantindo acesso às suas receitas, favoritos e configurações do perfil. Também utiliza o Firebase Authentication.
+- [x] Recuperar Senha: O usuário poderá recuperar sua senha, colocando seu email e recebendo um e-mail de recuperação. Processo também realizado pelo firebase Authentication.
+- [ ] Validação de email: Usuário terá a conta ativa apenas após validar seu email.
+- [x] Listar receitas: Exibe uma lista de receitas obtidas da API pública de receitas, permitindo que o usuário navegue e visualize detalhes de cada prato.
 - [ ] Pesquisar receita por nome: Possibilita ao usuário buscar receitas pelo nome, filtrando os resultados exibidos na tela.
 - [ ] Filtrar receita por doce, salgada ou agridoce: Permite refinar a visualização das receitas exibidas aplicando filtros de categoria conforme o tipo da receita.
 - [ ] Adicionar receita própria: O usuário pode criar e cadastrar uma nova receita, preenchendo informações como nome, ingredientes e preparo. As receitas são salvas no aplicativo.
-- [ ] Listar receitas próprias: Exibe somente as receitas criadas pelo usuário, permitindo acesso rápido ao conteúdo armazenado.
-- [ ] Adicionar e remover favoritos: O usuário pode favoritar ou desfavoritar receitas. Os favoritos são salvos na Firestore, associados ao usuário autenticado.
-- [ ] Listar favoritos: Mostra apenas as receitas que foram marcadas como favoritas, carregando os dados diretamente da Firestore.
-- [ ] Adicionar foto de perfil: Permite ao usuário escolher uma imagem para seu perfil e armazená-la, exibindo-a na tela de conta.
-
+- [x] Listar receitas próprias: Exibe somente as receitas criadas pelo usuário, permitindo acesso rápido ao conteúdo armazenado.
+- [x] Adicionar e remover favoritos: O usuário pode favoritar ou desfavoritar receitas. Os favoritos são salvos na Firestore, associados ao usuário autenticado.
+- [x] Listar favoritos: Mostra apenas as receitas que foram marcadas como favoritas, carregando os dados diretamente da Firestore.
+- [x] Adicionar foto de perfil: Permite ao usuário escolher uma imagem para seu perfil e armazená-la, exibindo-a na tela de conta.
 ---
 
 > [!WARNING]
