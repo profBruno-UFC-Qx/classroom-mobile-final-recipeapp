@@ -34,4 +34,17 @@ class HomeViewModel: ViewModel() {
             }
         }
     }
+
+    fun searchRecipe(name: String) {
+        viewModelScope.launch {
+            _state.value = HomeState(loading = true)
+
+            try {
+                val result = repository.searchRecipes(name)
+                _state.value = HomeState(recipes = result)
+            } catch (e: Exception) {
+                _state.value = HomeState(error = e.localizedMessage)
+            }
+        }
+    }
 }
