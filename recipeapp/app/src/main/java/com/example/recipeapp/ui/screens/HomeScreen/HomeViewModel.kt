@@ -47,4 +47,17 @@ class HomeViewModel: ViewModel() {
             }
         }
     }
+
+    fun filterByType(type: String) {
+        viewModelScope.launch {
+            _state.value = HomeState(loading = true)
+
+            try {
+                val result = repository.filterByType(type)
+                _state.value = HomeState(recipes = result)
+            } catch (e: Exception) {
+                _state.value = HomeState(error = e.localizedMessage)
+            }
+        }
+    }
 }

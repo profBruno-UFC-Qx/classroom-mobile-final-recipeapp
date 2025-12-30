@@ -1,5 +1,6 @@
 package com.example.recipeapp.data.remote
 
+import com.example.recipeapp.data.model.Recipe
 import com.example.recipeapp.data.model.RecipeItemReponse
 import com.example.recipeapp.data.model.RecipeListResponse
 import retrofit2.http.GET
@@ -26,8 +27,8 @@ interface RecipeService {
         @Query("descricao") name: String
     ): RecipeListResponse
 
-    // /receitas/tipo/{tipo}
+    @GET("/receitas/tipo/{type}")
     suspend fun filterByType(
         @Path("type") type: String
-    ): RecipeListResponse
+    ): List<Recipe>
 }

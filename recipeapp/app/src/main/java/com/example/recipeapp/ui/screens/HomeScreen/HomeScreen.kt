@@ -1,8 +1,11 @@
 package com.example.recipeapp.ui.screens.HomeScreen
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +26,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.recipeapp.ui.components.HeaderComponent
@@ -43,7 +49,19 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
     val loading = viewModel.state.collectAsState().value.loading
     val error = viewModel.state.collectAsState().value.error
     val recipes = viewModel.state.collectAsState().value.recipes
+    var search by remember { mutableStateOf("") }
+    val types = listOf<String>("Todas", "salgado", "doce", "agridoce")
+    var selectedType by remember { mutableStateOf("Todas") }
 
+
+    // Function to filter by type
+    fun onTypeClick(type: String) {
+        if (type == "Todas") {
+            viewModel.loadRecipes()
+        } else {
+            viewModel.filterByType(type)
+        }
+    }
     LaunchedEffect(uid) {
         favoritesViewModel.loadFavorites(uid)
     }
@@ -54,8 +72,6 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
         Column(
             modifier = Modifier.padding(padding)
         ) {
-
-            var search by remember { mutableStateOf("") }
             HeaderComponent(
                 tittle = "Tela Inicial",
                 leftIcon = R.drawable.ic_box_arrow_in_left,
@@ -96,7 +112,19 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
                 )
             )
 
-            Spacer(modifier = Modifier.height(22.dp))
+            Spacer(modifier = Modifier.height(10.dp))
+
+            FilterRow(
+                types = types,
+                selectedType = selectedType,
+                onTypeSelected = {type ->
+                    selectedType = type
+                    onTypeClick(type)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             when {
                 loading -> {
                     Box(modifier = Modifier.padding(padding).fillMaxSize()) {
@@ -152,6 +180,63 @@ fun HomeScreen(viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.v
                     }
                 }
             }
+        }
+    }
+}
+
+
+// Filter buttons component
+@Composable
+fun FilterRow(
+    types: List<String>,
+    selectedType: String,
+    onTypeSelected: (String) -> Unit
+) {
+
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)
+    ) {
+        val tabWidth = maxWidth / types.size
+        val selectedIndex = types.indexOf(selectedType).coerceAtLeast(0)
+        val animatedOffset by animateDpAsState(
+            targetValue = tabWidth * selectedIndex,
+            label = "Animação de underline"
+        )
+
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                types.forEach { type ->
+                    TextButton(
+                        onClick = {
+                            onTypeSelected(type)
+                                  },
+                        modifier = Modifier.width(tabWidth)
+                    ) {
+                        Text(
+                            type.uppercase(),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 22.sp,
+                            fontWeight = if (type == selectedType)
+                                FontWeight.Bold
+                            else
+                                FontWeight.Normal
+                        )
+                    }
+                }
+            }
+            // Animation Line
+            Box(
+                modifier = Modifier.offset(x = animatedOffset)
+                    .width(tabWidth)
+                    .height(3.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        shape = RoundedCornerShape(2.dp)
+                    )
+            )
         }
     }
 }

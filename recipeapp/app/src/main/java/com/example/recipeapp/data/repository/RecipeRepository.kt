@@ -20,6 +20,6 @@ class RecipeRepository {
     }
 
     suspend fun filterByType(type: String): List<Recipe> {
-        return api.filterByType(type).items
+        return api.filterByType(type)
     }
 }
