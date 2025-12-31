@@ -348,8 +348,9 @@ fun AddRecipeScreen(
                             Column(modifier = Modifier.padding(horizontal = 12.dp)) {
                                 ingredients.forEachIndexed { index, item ->
                                     Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text (
                                             "- $item",
@@ -439,8 +440,9 @@ fun AddRecipeScreen(
                             Column(modifier = Modifier.padding(horizontal = 12.dp)) {
                                 instructions.forEachIndexed { index, item ->
                                     Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text (
                                             "${index + 1}. $item",
@@ -769,7 +771,7 @@ fun InstructionModal(
             ) {
                 tempInstructions.forEachIndexed { index, value ->
                     Row(
-                        verticalAlignment = Alignment.Top
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         OutlinedTextField(
                             value = value,
@@ -780,7 +782,7 @@ fun InstructionModal(
                             },
                             label = { Text("Passo ${index + 1}") },
                             modifier = Modifier.weight(1f),
-                            minLines = 2
+                            minLines = 1
                         )
 
                         if (tempInstructions.size > 1) {
