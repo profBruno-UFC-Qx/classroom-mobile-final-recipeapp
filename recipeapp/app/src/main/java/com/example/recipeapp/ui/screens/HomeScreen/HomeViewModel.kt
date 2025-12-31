@@ -27,7 +27,7 @@ class HomeViewModel: ViewModel() {
             _state.value = HomeState(loading = true)
 
             try {
-                val result = repository.getRecipes(page = 1, limit = 20)
+                val result = repository.getRecipes()
                 _state.value = HomeState(recipes = result)
             } catch (e: Exception) {
                 _state.value = HomeState(error = e.localizedMessage)

@@ -11,8 +11,8 @@ interface RecipeService {
     // /receitas/todas?page=X&limit=10
     @GET("receitas/todas")
     suspend fun getRecipes(
-        @Query("page") page: Int,
-        @Query("limit") limit: Int = 10
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 100
     ) : RecipeListResponse
 
     // /receitas/{id}

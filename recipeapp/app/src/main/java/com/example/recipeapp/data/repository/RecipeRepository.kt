@@ -7,8 +7,8 @@ import com.example.recipeapp.data.remote.RecipeService
 class RecipeRepository {
     private val api = ApiClient.retrofit.create(RecipeService::class.java)
 
-    suspend fun getRecipes(page: Int, limit: Int = 10): List<Recipe> {
-        return api.getRecipes(page, limit).items
+    suspend fun getRecipes(): List<Recipe> {
+        return api.getRecipes().items
     }
 
     suspend fun getRecipe(id: Int): Recipe {
