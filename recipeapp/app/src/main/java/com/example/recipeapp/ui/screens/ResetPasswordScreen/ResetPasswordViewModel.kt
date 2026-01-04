@@ -13,6 +13,9 @@ class ResetPasswordViewModel(
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
 
+    private val _success = MutableStateFlow(false)
+    val success = _success.asStateFlow()
+
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
@@ -21,11 +24,20 @@ class ResetPasswordViewModel(
              try {
                  _loading.value = true
                  repository.resetPassword(email)
+                 _success.value = true
              } catch (e: Exception){
                 _error.value = e.message
              } finally {
                  _loading.value = false
              }
          }
+    }
+
+    fun clearSuccess() {
+        _success.value = false
+    }
+
+    fun clearError() {
+        _error.value = null
     }
 }

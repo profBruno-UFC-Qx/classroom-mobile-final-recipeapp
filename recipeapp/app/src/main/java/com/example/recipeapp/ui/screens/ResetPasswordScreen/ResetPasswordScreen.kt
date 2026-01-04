@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -54,9 +55,38 @@ fun ResetPasswordScreen(
     navController: NavController
 ) {
     val loading by viewModel.loading.collectAsState()
-    val error by viewModel.error.collectAsState()
-
     var email by remember { mutableStateOf("") }
+
+
+    // Success Alert
+    val success by viewModel.success.collectAsState()
+    var showAlertSuccess by remember {mutableStateOf(false)}
+    var successMessage by remember { mutableStateOf("") }
+
+    fun triggerSuccess(msg: String){
+        successMessage = msg
+        showAlertSuccess = true
+    }
+
+    if (success){
+        triggerSuccess("Verifique sua caixa de entrada (e a pasta de spam) para as instruções de redefinição de senha.")
+        viewModel.clearSuccess()
+    }
+
+    // Error alert
+    val error by viewModel.error.collectAsState()
+    var showErrorAlert by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    fun triggerError(msg: String){
+        errorMessage = msg
+        showErrorAlert = true
+    }
+
+    error?.let {
+        triggerError(it)
+        viewModel.clearError()
+    }
 
     Scaffold { padding ->
         Column(
@@ -146,13 +176,40 @@ fun ResetPasswordScreen(
                                 )
                             }
                         }
-
-                        error?.let {
-                            Spacer(Modifier.height(16.dp))
-                            Text(it, color = MaterialTheme.colorScheme.error)
-                        }
                     }
                 }
+            }
+
+            // Success Alert
+            if(showAlertSuccess) {
+                AlertDialog(
+                    onDismissRequest = {showAlertSuccess = false},
+                    confirmButton = {
+                        Button(onClick = {
+                            showAlertSuccess = false
+                        }) {
+                            Text("Ok")
+                        }
+                    },
+                    title = {Text("E-mail de verificação enviado!")},
+                    text = {Text(successMessage)}
+                )
+            }
+
+            // Error Alert
+            if(showErrorAlert) {
+                AlertDialog(
+                    onDismissRequest = {showErrorAlert = false},
+                    confirmButton = {
+                        Button(onClick = {
+                            showErrorAlert = false
+                        }) {
+                            Text("Ok")
+                        }
+                    },
+                    title = {Text("Erro!")},
+                    text = {Text(errorMessage)}
+                )
             }
         }
     }
