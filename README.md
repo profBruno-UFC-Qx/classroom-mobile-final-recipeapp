@@ -26,7 +26,7 @@ O público-alvo inclui desde pessoas que cozinham ocasionalmente até entusiasta
 - [x] Realizar Cadastro: Permite que o usuário crie uma conta no aplicativo utilizando e-mail e senha ou pelo google. O processo é feito através do Firebase Authentication.
 - [x] Realizar Login: Autentica o usuário já cadastrado, garantindo acesso às suas receitas, favoritos e configurações do perfil. Também utiliza o Firebase Authentication.
 - [x] Recuperar Senha: O usuário poderá recuperar sua senha, colocando seu email e recebendo um e-mail de recuperação. Processo também realizado pelo firebase Authentication.
-- [ ] Validação de email: Usuário terá a conta ativa apenas após validar seu email.
+- [x] Validação de email: Usuário terá a conta ativa apenas após validar seu email.
 - [x] Listar receitas: Exibe uma lista de receitas obtidas da API pública de receitas, permitindo que o usuário navegue e visualize detalhes de cada prato.
 - [x] Pesquisar receita por nome: Possibilita ao usuário buscar receitas pelo nome, filtrando os resultados exibidos na tela.
 - [x] Filtrar receita por doce, salgada ou agridoce: Permite refinar a visualização das receitas exibidas aplicando filtros de categoria conforme o tipo da receita.
