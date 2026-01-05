@@ -224,7 +224,7 @@ fun LoginScreen(
                         Text("Ok")
                     }
                 },
-                title = { Text("Confirme seu e-mail")},
+                title = { Text("Erro!")},
                 text = {Text(state.error!!)}
             )
         }
