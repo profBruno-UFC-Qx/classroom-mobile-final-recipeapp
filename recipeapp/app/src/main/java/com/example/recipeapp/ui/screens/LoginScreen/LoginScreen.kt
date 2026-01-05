@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.auth.AuthState
@@ -214,10 +216,18 @@ fun LoginScreen(
         }
         Spacer(Modifier.height(12.dp))
 
-
-        state.error?.let {
-            Spacer(Modifier.height(16.dp))
-            Text(it, color = MaterialTheme.colorScheme.error)
+        if(state.error != null){
+            AlertDialog(
+                onDismissRequest = { authViewModel.clearMessage()},
+                confirmButton = {
+                    Button(onClick = { authViewModel.clearMessage() }){
+                        Text("Ok")
+                    }
+                },
+                title = { Text("Confirme seu e-mail")},
+                text = {Text(state.error!!)}
+            )
         }
+
     }
 }

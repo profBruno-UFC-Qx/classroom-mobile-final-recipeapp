@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -213,10 +214,30 @@ fun RegisterScreen(
         }
         Spacer(Modifier.height(12.dp))
 
+        if(state.error != null){
+            AlertDialog(
+                onDismissRequest = { authViewModel.clearMessage()},
+                confirmButton = {
+                    Button(onClick = { authViewModel.clearMessage() }){
+                        Text("Ok")
+                    }
+                },
+                title = { Text("Erro ao enviar e-mail.")},
+                text = {Text(state.error!!)}
+            )
+        }
 
-        state.error?.let {
-            Spacer(Modifier.height(16.dp))
-            Text(it, color = MaterialTheme.colorScheme.error)
+        if(state.success != null){
+            AlertDialog(
+                onDismissRequest = { authViewModel.clearMessage()},
+                confirmButton = {
+                    Button(onClick = { authViewModel.clearMessage() }){
+                        Text("Ok")
+                    }
+                },
+                title = { Text("Cadastro Realizado.")},
+                text = {Text(state.success!!)}
+            )
         }
     }
 }

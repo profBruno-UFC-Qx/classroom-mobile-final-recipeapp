@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
 data class AuthState (
     val user: FirebaseUser? = null,
     val loading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val success: String? = null
 )
 
 class AuthViewModel (
@@ -39,15 +40,26 @@ class AuthViewModel (
 
     fun login(email: String, password: String, remember: Boolean = false){
         viewModelScope.launch {
-            _state.value = _state.value.copy(loading = true, error = null)
+            _state.value = _state.value.copy(loading = true, error = null, success = null)
             try{
                 repository.loginWithEmail(email, password)
-                val expiration = if (remember)
-                    System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 // 30 dias
-                else
-                    System.currentTimeMillis() + 1000L // 1 segundo
-                sessionManager.saveExpiration(expiration)
-                _state.value = AuthState(user = repository.currentUser(), loading = false)
+                val user = repository.currentUser()
+
+                if(user?.isEmailVerified == true) {
+                    val expiration = if (remember)
+                        System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 // 30 dias
+                    else
+                        System.currentTimeMillis() + 1000L // 1 segundo
+                    sessionManager.saveExpiration(expiration)
+                    _state.value = AuthState(user = user, loading = false)
+                } else {
+                    repository.signOut()
+                    _state.value = AuthState(
+                        user = null,
+                        loading = false,
+                        error = "Verifique seu e-mail antes de acessar."
+                    )
+                }
             } catch (e: Exception){
                 _state.value = AuthState(user = null, loading = false, error = e.localizedMessage)
             }
@@ -56,15 +68,27 @@ class AuthViewModel (
 
     fun register(email: String, password: String, remember: Boolean){
         viewModelScope.launch {
-            _state.value = _state.value.copy(loading = true, error = null)
+            _state.value = _state.value.copy(loading = true, error = null, success = null)
             try {
                 repository.registerWithEmail(email, password)
-                val expiration = if (remember)
-                    System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 // 30 dias
-                else
-                    System.currentTimeMillis() + 1000L // 1 segundo
-                sessionManager.saveExpiration(expiration)
-                _state.value = AuthState(user = repository.currentUser(), loading = false)
+
+                val user = repository.currentUser()
+
+                user?.sendEmailVerification()?.addOnCompleteListener { task ->
+                    if(task.isSuccessful) {
+                        _state.value = AuthState(
+                            user = null,
+                            loading = false,
+                            success = "E-mail de verificação enviado. Verifique sua caixa de entrada."
+                        )
+                    } else {
+                        _state.value = AuthState(
+                            user = null,
+                            loading = false,
+                            error = "Erro ao enviar e-mail de verificação."
+                        )
+                    }
+                }
             } catch (e: Exception) {
                 _state.value = AuthState(user = null, )
             }
@@ -88,5 +112,9 @@ class AuthViewModel (
                 onComplete(Result.failure(e))
             }
         }
+    }
+
+    fun clearMessage() {
+        _state.value = _state.value.copy(error = null, success = null)
     }
 }
