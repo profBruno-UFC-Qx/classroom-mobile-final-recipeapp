@@ -198,7 +198,7 @@ fun PerfilScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Se existir uma imagem pendente mostra os botões de salvar ou cancelar alterações
+                // If exist pending images show the actions buttons
                 if(pendingUri != null && !loading){
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -241,12 +241,7 @@ fun PerfilScreen(
                         }
                     }
                 }
-                Text(
-                    text = displayName,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(6.dp))
                 Text(
                     text = userEmail,
                     style = MaterialTheme.typography.titleMedium,
