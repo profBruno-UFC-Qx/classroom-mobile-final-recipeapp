@@ -3,8 +3,11 @@ package com.example.recipeapp.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,9 +34,12 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.example.recipeapp.R
 import com.example.recipeapp.data.model.Recipe
 import com.example.recipeapp.ui.auth.AuthViewModel
@@ -68,7 +74,7 @@ fun RecipeCard(
     ){
         Column(modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.fillMaxWidth()){
-                AsyncImage(
+                SubcomposeAsyncImage(
                     model = recipe.link_imagem,
                     contentDescription = recipe.receita,
                     contentScale = ContentScale.Crop,
@@ -76,7 +82,30 @@ fun RecipeCard(
                         .height(240.dp)
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
-                        .background(Color.DarkGray)
+                        .background(MaterialTheme.colorScheme.onBackground),
+                    error = {
+                        Column(
+                            modifier = Modifier.fillMaxSize().background(Color.Gray),
+                            Arrangement.Center,
+                            Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.ic_card_image),
+                                contentDescription = "Erro ao carregar imagem",
+                                modifier = Modifier.size(130.dp).graphicsLayer(colorFilter = ColorFilter.tint(
+                                    MaterialTheme.colorScheme.onPrimary, blendMode = BlendMode.SrcIn
+                                ))
+                            )
+                            Spacer(Modifier.height(12.dp))
+                            Text(
+                                "Imagem não encontrada!",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 )
                     val image = if(isFavorite) R.drawable.ic_heart_fill else R.drawable.ic_heart
                     val description = if (isFavorite) "Remover favorito" else "Adicionar aos favoritos"
