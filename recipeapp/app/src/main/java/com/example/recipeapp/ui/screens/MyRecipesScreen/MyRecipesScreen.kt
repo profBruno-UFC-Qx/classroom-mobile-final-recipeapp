@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -129,16 +130,21 @@ fun MyRecipesScreen(
                         contentPadding = PaddingValues(16.dp)
                     ) {
                         items(recipes) {recipe ->
-                            RecipeCard(
-                                recipe = recipe,
-                                onClick = {
-                                    navController.currentBackStackEntry?.savedStateHandle?.set("recipe", recipe)
-                                    navController.navigate("details")
-                                },
-                                uid = uid,
-                                viewModel = favoritesViewModel
+                            Column {
+                                RecipeCard(
+                                    recipe = recipe,
+                                    onClick = {
+                                        navController.currentBackStackEntry?.savedStateHandle?.set("recipe", recipe)
+                                        navController.navigate("details")
+                                    },
+                                    uid = uid,
+                                    viewModel = favoritesViewModel,
+                                    isMyRecipe = true,
+                                    removeRecipeFun = {viewModel.removeRecipe(uid, recipe.id)}
 
-                            )
+                                )
+
+                            }
                         }
                     }
                 }

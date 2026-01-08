@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -51,6 +53,8 @@ fun RecipeCard(
     onClick: () -> Unit,
     uid: String,
     viewModel: FavoritesViewModel,
+    isMyRecipe: Boolean = false,
+    removeRecipeFun: () -> Unit = {}
 ) {
     val favorites by viewModel.favorites.collectAsState()
     val isFavorite = favorites.any {it.id == recipe.id}
@@ -110,6 +114,26 @@ fun RecipeCard(
                     val image = if(isFavorite) R.drawable.ic_heart_fill else R.drawable.ic_heart
                     val description = if (isFavorite) "Remover favorito" else "Adicionar aos favoritos"
 
+                if(isMyRecipe) {
+                    Column(
+                        modifier = Modifier.align(Alignment.TopStart)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .clickable(onClick = {removeRecipeFun()})
+                    ){
+                        Image(
+                            painter = painterResource(R.drawable.ic_delete),
+                            contentDescription = "Excluir receita",
+                            modifier =  Modifier.graphicsLayer(
+                                    colorFilter = ColorFilter.tint(
+                                        color = MaterialTheme.colorScheme.tertiary,
+                                        BlendMode.SrcIn
+                                    )
+                                )
+                                .padding(8.dp)
+                                .size(32.dp)
+                        )
+                    }
+                }
                 Image(
                     painter = painterResource(image),
                     contentDescription = description,

@@ -21,6 +21,8 @@ class MyRecipeViewModel (
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
 
+    private val _loadingRemoveRecipe = MutableStateFlow(false)
+    val loadingRemoveRecipe = _loadingRemoveRecipe.asStateFlow()
     suspend fun loadRecipes(uid: String){
         _loading.value = true
         try {
@@ -30,6 +32,23 @@ class MyRecipeViewModel (
             _recipes.value = emptyList()
         } finally {
             _loading.value = false
+        }
+    }
+
+    fun removeRecipe(uid: String, RecipeId: String){
+        viewModelScope.launch {
+            _loadingRemoveRecipe.value = true
+            try {
+                repository.removeRecipe(uid, RecipeId)
+                _loading.value = true
+                val result = repository.getRecipes(uid)
+                _recipes.value = result
+            } catch (e: Exception){
+                _recipes.value = emptyList()
+            } finally {
+                _loadingRemoveRecipe.value = false
+                _loading.value = false
+            }
         }
     }
 }
