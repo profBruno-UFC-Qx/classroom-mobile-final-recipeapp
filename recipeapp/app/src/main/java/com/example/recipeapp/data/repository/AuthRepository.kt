@@ -18,6 +18,10 @@ class AuthRepository(private val auth: FirebaseAuth = FirebaseAuth.getInstance()
         return auth.sendPasswordResetEmail(email).await()
     }
 
+    suspend fun loginWithGoogle(idToken: String): AuthResult {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        return auth.signInWithCredential(credential).await()
+    }
     fun currentUser() = auth.currentUser
 
     suspend fun signOut(){

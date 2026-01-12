@@ -113,6 +113,28 @@ class AuthViewModel (
         }
     }
 
+    fun loginWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(loading = true)
+            try {
+                repository.loginWithGoogle(idToken)
+                val user = repository.currentUser()
+
+                if(user != null) {
+                    val expiration = System.currentTimeMillis() + 1000L * 60 * 60 * 60
+                    sessionManager.saveExpiration(expiration)
+                    _state.value = _state.value.copy(user = user)
+                } else {
+                    _state.value = _state.value.copy(user = null)
+                }
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(error = e.message)
+            } finally {
+                _state.value = _state.value.copy(loading = false)
+            }
+        }
+    }
+
     fun clearMessage() {
         _state.value = _state.value.copy(error = null, success = null)
     }

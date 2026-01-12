@@ -48,6 +48,7 @@ import androidx.navigation.NavController
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.auth.AuthState
 import com.example.recipeapp.ui.auth.AuthViewModel
+import com.example.recipeapp.ui.auth.components.GoogleSignInButton
 import com.example.recipeapp.ui.components.HeaderComponent
 
 @Composable
@@ -192,7 +193,24 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                text = "ou faça login com:",
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 18.sp
+            )
             Spacer(modifier = Modifier.height(6.dp))
+
+            GoogleSignInButton(
+                onGoogleSignInCompleted = {idToken ->
+                    authViewModel.loginWithGoogle(idToken)
+                },
+                onError = {errorMsg ->
+                    println(errorMsg)
+                }
+            )
+
+            Spacer(Modifier.height(6.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
@@ -201,7 +219,7 @@ fun LoginScreen(
                     text = "Não possui conta?",
                     color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.titleMedium,
-                    fontSize = 22.sp
+                    fontSize = 18.sp
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 TextButton(onClick = {navController.navigate("register")}) {
@@ -209,7 +227,7 @@ fun LoginScreen(
                         text = "Cadastre-se",
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.titleMedium,
-                        fontSize = 22.sp,
+                        fontSize = 18.sp,
                     )
                 }
             }

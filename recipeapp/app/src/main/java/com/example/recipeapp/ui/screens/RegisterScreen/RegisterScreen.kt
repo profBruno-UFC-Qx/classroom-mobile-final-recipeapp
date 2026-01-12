@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.auth.AuthState
 import com.example.recipeapp.ui.auth.AuthViewModel
+import com.example.recipeapp.ui.auth.components.GoogleSignInButton
 
 @Composable
 fun RegisterScreen(
@@ -183,13 +184,30 @@ fun RegisterScreen(
                 )
             }
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
 
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                text = "ou se cadastre com:",
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+
+            GoogleSignInButton(
+                onGoogleSignInCompleted = {idToken ->
+                    authViewModel.loginWithGoogle(idToken)
+                },
+                onError = {errorMsg ->
+                    println(errorMsg)
+                }
+            )
+
             Spacer(modifier = Modifier.height(6.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
