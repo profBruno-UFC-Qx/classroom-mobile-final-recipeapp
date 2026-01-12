@@ -23,7 +23,7 @@ O público-alvo inclui desde pessoas que cozinham ocasionalmente até entusiasta
 ## Funcionalidades Principais
 [Liste as principais funcionalidades do projeto. Use caixas de seleção para que a equipe possa marcar as concluídas nas próximas etapas.]
 
-- [x] Realizar Cadastro: Permite que o usuário crie uma conta no aplicativo utilizando e-mail e senha. O processo é feito através do Firebase Authentication.
+- [x] Realizar Cadastro: Permite que o usuário crie uma conta no aplicativo utilizando e-mail e senha ou com o google. O processo é feito através do Firebase Authentication.
 - [x] Realizar Login: Autentica o usuário já cadastrado, garantindo acesso às suas receitas, favoritos e configurações do perfil. Também utiliza o Firebase Authentication.
 - [x] Recuperar Senha: O usuário poderá recuperar sua senha, colocando seu email e recebendo um e-mail de recuperação. Processo também realizado pelo firebase Authentication.
 - [x] Validação de email: Usuário terá a conta ativa apenas após validar seu email.
