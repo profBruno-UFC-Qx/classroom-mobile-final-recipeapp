@@ -4,9 +4,14 @@ package com.example.recipeapp.ui.screens.PefilScreen
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,16 +20,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -46,6 +55,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -58,22 +68,27 @@ import com.example.recipeapp.R
 import com.example.recipeapp.ui.components.HeaderComponent
 import com.example.recipeapp.ui.navigation.BottomBar
 import java.io.File
+import kotlin.properties.ReadOnlyProperty
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PerfilScreen(
     navController: NavController,
-    viewModel: PerfilScreenViewModel = viewModel(),
     uid: String,
     userEmail: String,
     displayName: String
 ){
     val context = LocalContext.current
 
+    val viewModel: PerfilScreenViewModel = viewModel(
+        factory = PerfilViewModelFactory(context)
+    )
+
     val pictureUrl by viewModel.profilePicture.collectAsState()
     val pendingUri by viewModel.pendingUri.collectAsState()
     val loading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val isDarkTheme by viewModel.isDarkTheme.collectAsState()
 
     var showOptions by remember { mutableStateOf(false) }
 
@@ -247,6 +262,13 @@ fun PerfilScreen(
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
+                Spacer(Modifier.height(32.dp))
+
+                ThemeSwitcher(
+                    isDarkTheme = isDarkTheme,
+                    onToggle = {viewModel.toggleTheme()}
+                )
+
             }
         }
 
@@ -314,6 +336,74 @@ fun PerfilScreen(
                 },
                 title = {Text("Atenção")},
                 text = {Text(errorMessage)}
+            )
+        }
+    }
+}
+
+@Composable
+fun ThemeSwitcher(
+    isDarkTheme: Boolean,
+    onToggle: () -> Unit
+) {
+    val switchWidth = 150.dp
+    val switchHeight = 50.dp
+    val thumbSize = 40.dp
+    val padding = 5.dp
+
+    val thumbOffset by animateDpAsState(
+        targetValue = if (isDarkTheme) switchWidth - thumbSize - padding else padding,
+        animationSpec = tween(durationMillis = 500),
+        label = "thumbAnimation"
+    )
+
+    val trackColor by animateColorAsState(
+        targetValue = if (isDarkTheme) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+        label = "colorAnimation"
+    )
+
+    val icon = if (isDarkTheme) R.drawable.ic_moon else R.drawable.ic_sun
+
+    Box(
+        modifier = Modifier
+            .width(switchWidth)
+            .height(switchHeight)
+            .clip(RoundedCornerShape(50))
+            .background(trackColor)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {onToggle()},
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_sun),
+                contentDescription = "Teste",
+                modifier = Modifier.size(24.dp)
+            )
+            Image(
+                painter = painterResource(R.drawable.ic_moon),
+                contentDescription = "Teste",
+                modifier = Modifier.size(24.dp)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .offset(x = thumbOffset)
+                .size(thumbSize)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.tertiary),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(icon),
+                contentDescription = "Trocar tema",
+                modifier = Modifier.size(24.dp)
             )
         }
     }

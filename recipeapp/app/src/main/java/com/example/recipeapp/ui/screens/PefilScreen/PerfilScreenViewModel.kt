@@ -3,14 +3,20 @@ package com.example.recipeapp.ui.screens.PefilScreen
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.recipeapp.data.dataStore.ThemeManager
 import com.example.recipeapp.data.repository.ProfilePictureRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class PerfilScreenViewModel(
-    private val repository: ProfilePictureRepository = ProfilePictureRepository()
+    private val repository: ProfilePictureRepository = ProfilePictureRepository(),
+    private val themeManager: ThemeManager
 ): ViewModel() {
     private val _profilePicture = MutableStateFlow<String?>(null)
     val profilePicture = _profilePicture.asStateFlow()
@@ -76,4 +82,28 @@ class PerfilScreenViewModel(
         }
     }
 
+    val isDarkTheme: StateFlow<Boolean> = themeManager.isDarkMode
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
+    fun toggleTheme() {
+        viewModelScope.launch {
+            themeManager.toggleTheme(!isDarkTheme.value)
+        }
+    }
+}
+
+class PerfilViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(PerfilScreenViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return PerfilScreenViewModel(
+                themeManager = ThemeManager(context)
+            ) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

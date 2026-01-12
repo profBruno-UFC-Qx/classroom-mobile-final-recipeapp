@@ -1,7 +1,6 @@
-package com.example.recipeapp.data.auth
+package com.example.recipeapp.data.dataStore
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore

@@ -3,9 +3,8 @@ package com.example.recipeapp.ui.auth
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.recipeapp.data.auth.SessionManager
+import com.example.recipeapp.data.dataStore.SessionManager
 import com.example.recipeapp.data.repository.AuthRepository
-import com.google.android.gms.auth.api.Auth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
