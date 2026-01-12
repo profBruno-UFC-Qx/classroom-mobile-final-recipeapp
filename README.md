@@ -23,7 +23,7 @@ O público-alvo inclui desde pessoas que cozinham ocasionalmente até entusiasta
 ## Funcionalidades Principais
 [Liste as principais funcionalidades do projeto. Use caixas de seleção para que a equipe possa marcar as concluídas nas próximas etapas.]
 
-- [x] Realizar Cadastro: Permite que o usuário crie uma conta no aplicativo utilizando e-mail e senha ou pelo google. O processo é feito através do Firebase Authentication.
+- [x] Realizar Cadastro: Permite que o usuário crie uma conta no aplicativo utilizando e-mail e senha. O processo é feito através do Firebase Authentication.
 - [x] Realizar Login: Autentica o usuário já cadastrado, garantindo acesso às suas receitas, favoritos e configurações do perfil. Também utiliza o Firebase Authentication.
 - [x] Recuperar Senha: O usuário poderá recuperar sua senha, colocando seu email e recebendo um e-mail de recuperação. Processo também realizado pelo firebase Authentication.
 - [x] Validação de email: Usuário terá a conta ativa apenas após validar seu email.
@@ -42,6 +42,44 @@ O público-alvo inclui desde pessoas que cozinham ocasionalmente até entusiasta
 
 ##  Tecnologias: 
 Liste aqui as tecnologias e bibliotecas que foram utilizadas no projeto.
+
+### 📱 Plataforma & Linguagem
+- **Kotlin** – Linguagem principal do projeto
+- **Android SDK** – Base para desenvolvimento Android
+
+### 🎨 Interface & UI
+- **Jetpack Compose** – Construção de interfaces declarativas e reativas
+- **Material 3 (Material You)** – Design system moderno do Android
+- **LazyColumn** – Listagem eficiente e performática
+- **Animações com Compose** – Transições e feedback visual (ex.: underline animado)
+- **Tema Claro / Escuro** – Com persistência da preferência do usuário
+
+### 🏗 Arquitetura & Estado
+- **MVVM (Model–View–ViewModel)** – Organização do projeto
+- **ViewModel (AndroidX Lifecycle)** – Gerenciamento de estado e ciclo de vida
+- **StateFlow & Flow** – Estado reativo e observável
+- **Kotlin Coroutines** – Programação assíncrona
+
+### 🌐 Comunicação com API
+- **Retrofit** – Consumo de API REST
+- **Gson / Moshi** – Serialização e desserialização de JSON
+
+### 🔐 Autenticação & Segurança
+- **Firebase Authentication**
+  - Login com e-mail e senha
+  - Cadastro de usuários
+  - Verificação de e-mail
+  - Recuperação de senha
+  - Gerenciamento de sessão
+- **Firebase Auth SDK**
+
+### 💾 Persistência de Dados
+- **DataStore (Preferences)** – Armazenamento de preferências locais
+- **Session Manager** – Controle de expiração de sessão
+
+### 🧭 Navegação
+- **Jetpack Navigation (Compose)** – Navegação entre telas
+- **Passagem de dados entre rotas**
 
 ---
 
