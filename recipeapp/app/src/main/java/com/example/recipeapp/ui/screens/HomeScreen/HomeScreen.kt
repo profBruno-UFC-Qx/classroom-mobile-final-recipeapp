@@ -218,7 +218,7 @@ fun FilterRow(
                         Text(
                             type.uppercase(),
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontSize = 22.sp,
+                            fontSize = 15.sp,
                             fontWeight = if (type == selectedType)
                                 FontWeight.Bold
                             else
