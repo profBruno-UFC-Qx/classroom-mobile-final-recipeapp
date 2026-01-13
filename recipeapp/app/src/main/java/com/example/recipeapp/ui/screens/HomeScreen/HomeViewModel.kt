@@ -1,0 +1,63 @@
+package com.example.recipeapp.ui.screens.HomeScreen
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.recipeapp.data.model.Recipe
+import com.example.recipeapp.data.repository.RecipeRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+
+class HomeState(
+    val loading: Boolean = false,
+    val error: String? = null,
+    val recipes: List<Recipe> = emptyList()
+)
+class HomeViewModel: ViewModel() {
+    private val repository = RecipeRepository()
+
+    private val _state = MutableStateFlow(HomeState())
+    val state: StateFlow<HomeState> = _state
+
+    init {
+        loadRecipes()
+    }
+    fun loadRecipes() {
+        viewModelScope.launch {
+            _state.value = HomeState(loading = true)
+
+            try {
+                val result = repository.getRecipes()
+                _state.value = HomeState(recipes = result)
+            } catch (e: Exception) {
+                _state.value = HomeState(error = e.localizedMessage)
+            }
+        }
+    }
+
+    fun searchRecipe(name: String) {
+        viewModelScope.launch {
+            _state.value = HomeState(loading = true)
+
+            try {
+                val result = repository.searchRecipes(name)
+                _state.value = HomeState(recipes = result)
+            } catch (e: Exception) {
+                _state.value = HomeState(error = e.localizedMessage)
+            }
+        }
+    }
+
+    fun filterByType(type: String) {
+        viewModelScope.launch {
+            _state.value = HomeState(loading = true)
+
+            try {
+                val result = repository.filterByType(type)
+                _state.value = HomeState(recipes = result)
+            } catch (e: Exception) {
+                _state.value = HomeState(error = e.localizedMessage)
+            }
+        }
+    }
+}

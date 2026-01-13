@@ -1,0 +1,154 @@
+package com.example.recipeapp.ui.screens.MyRecipesScreen
+
+import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.example.recipeapp.R
+import com.example.recipeapp.ui.components.HeaderComponent
+import com.example.recipeapp.ui.components.RecipeCard
+import com.example.recipeapp.ui.navigation.BottomBar
+import com.example.recipeapp.ui.screens.FavoritesScreen.FavoritesViewModel
+
+
+@Composable
+fun MyRecipesScreen(
+    viewModel: MyRecipeViewModel = viewModel(),
+    uid: String,
+    favoritesViewModel: FavoritesViewModel,
+    navController: NavController
+){
+    val recipes by viewModel.recipes.collectAsState()
+    val loading by viewModel.loading.collectAsState()
+
+    LaunchedEffect(uid) {
+        viewModel.loadRecipes(uid)
+    }
+    Scaffold(
+        bottomBar = { BottomBar(navController as NavHostController)},
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate("AddRecipe")
+                },
+                containerColor = MaterialTheme.colorScheme.onBackground,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ){
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ){
+                    Icon(
+                        Icons.Filled.Add, "Adicionar Receita",
+                    )
+                    Text(
+                        text = "Adicionar Receita",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier.padding(padding)
+        ) {
+            HeaderComponent(
+                tittle = "Minhas Receitas",
+                leftIcon = R.drawable.ic_left_arrow,
+                rightIcon = R.drawable.ic_clipboard,
+                onLeftClick = {
+                    navController.popBackStack()
+                },
+                isLogo = false
+            )
+
+            Spacer(modifier = Modifier.height(22.dp))
+
+            when {
+                loading ->{
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "Carregando receitas",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+
+                recipes.isEmpty() -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Nenhuma receita cadastrada.",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+
+                else -> {
+                    LazyColumn(
+                        contentPadding = PaddingValues(16.dp)
+                    ) {
+                        items(recipes) {recipe ->
+                            Column {
+                                RecipeCard(
+                                    recipe = recipe,
+                                    onClick = {
+                                        navController.currentBackStackEntry?.savedStateHandle?.set("recipe", recipe)
+                                        navController.navigate("details")
+                                    },
+                                    uid = uid,
+                                    viewModel = favoritesViewModel,
+                                    isMyRecipe = true,
+                                    removeRecipeFun = {viewModel.removeRecipe(uid, recipe.id)}
+
+                                )
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
