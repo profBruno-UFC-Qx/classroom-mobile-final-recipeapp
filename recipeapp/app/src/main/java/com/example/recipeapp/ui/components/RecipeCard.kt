@@ -2,6 +2,7 @@ package com.example.recipeapp.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -23,6 +26,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +41,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -114,26 +119,6 @@ fun RecipeCard(
                     val image = if(isFavorite) R.drawable.ic_heart_fill else R.drawable.ic_heart
                     val description = if (isFavorite) "Remover favorito" else "Adicionar aos favoritos"
 
-                if(isMyRecipe) {
-                    Column(
-                        modifier = Modifier.align(Alignment.TopStart)
-                            .background(MaterialTheme.colorScheme.primary)
-                            .clickable(onClick = {removeRecipeFun()})
-                    ){
-                        Image(
-                            painter = painterResource(R.drawable.ic_delete),
-                            contentDescription = "Excluir receita",
-                            modifier =  Modifier.graphicsLayer(
-                                    colorFilter = ColorFilter.tint(
-                                        color = MaterialTheme.colorScheme.tertiary,
-                                        BlendMode.SrcIn
-                                    )
-                                )
-                                .padding(8.dp)
-                                .size(32.dp)
-                        )
-                    }
-                }
                 Image(
                     painter = painterResource(image),
                     contentDescription = description,
@@ -151,11 +136,29 @@ fun RecipeCard(
             }
 
             Column(modifier = Modifier.padding(12.dp)) {
-                Text(
-                    text = recipe.receita,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
+                Row(
+                    Modifier.fillMaxWidth(),
+                    Arrangement.SpaceBetween,
+                    Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = recipe.receita,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    if(isMyRecipe) {
+                        Button(
+                            onClick = {removeRecipeFun()},
+                            modifier = Modifier.width(170.dp)
+                        ) {
+                            Text(
+                                text = "Remover Receita",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        }
+                    }
+                }
                 Text(
                     text = recipe.ingredientes,
                     style = MaterialTheme.typography.bodySmall,
